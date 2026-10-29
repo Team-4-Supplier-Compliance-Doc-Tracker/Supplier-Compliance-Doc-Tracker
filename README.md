@@ -36,7 +36,7 @@ All three inputs are JSON. One parser, no CSV loader.
 
 Two failure levels:
 - **File-level** — the file is missing, is not valid JSON, or has the wrong top-level shape. Clear error naming the file, exit code 1, nothing processed.
-- **Record-level** — the file parsed but one object has a bad value. That object is rejected with a reason; every other object still loads.
+- **Record-level** — the file parsed but one object has a bad value. That object is rejected with a reason; every other object still loads. A rejected record keeps its `supplier_id` when it has one, so the report can tie it to that supplier's flags (e.g. DOC-015 rejected → SUP-105 shows env_declaration missing).
 
 ### 2. Document record
 
@@ -125,6 +125,8 @@ With `today` resolved as above and `N = expiring_soon_days`. Rules that compare 
 | **at risk** (part) | the part's supplier has an **expired** or **missing** document **of a type that part's category requires** | PRT-5003 (electrical, needs safety) is at risk; PRT-5004 (semiconductors, same supplier, no safety needed) is not |
 
 **Expiry date equal to today → expiring soon, not expired.** A document is valid through its expiry date.
+
+**A renewal replaces the document before it.** Expired and expiring soon judge only the newest document (latest `issue_date`) per supplier and type, so an old cert kept on file for audit is not flagged once it has been renewed.
 
 **Expiring soon and pending never make a part at risk.** They are warnings only. (In 1.1.0 a supplier whose only safety cert is pending also gets a **missing** flag, and that missing flag does count.)
 
