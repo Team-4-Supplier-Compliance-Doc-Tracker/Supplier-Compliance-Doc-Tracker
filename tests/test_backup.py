@@ -73,3 +73,49 @@ def test_restore_round_trip(tmp_path, sample_docs):
     }
     assert after == before
     assert sqlite3.connect(live).execute("PRAGMA integrity_check").fetchone()[0] == "ok"
+
+
+def test_restore_refuses_corrupt_backup_and_keeps_live(tmp_path, sample_docs):
+    live = tmp_path / "compliance.db"
+    _seed_db(live, sample_docs)
+    before = live.read_bytes()
+
+    corrupt = tmp_path / "corrupt.db"
+    corrupt.write_bytes(before[:64])  # truncated → malformed SQLite file
+
+    result = _run(RESTORE_SCRIPT, str(corrupt), "--db", str(live))
+    assert result.returncode != 0
+    assert "integrity_check" in result.stderr
+    assert live.read_bytes() == before
+    assert not list(tmp_path.glob("*.before-restore-*"))
+
+
+def test_restore_saves_live_aside_before_overwrite(tmp_path, sample_docs):
+    live = tmp_path / "compliance.db"
+    _seed_db(live, sample_docs)
+    out_dir = tmp_path / "backups"
+    assert _run(BACKUP_SCRIPT, "--db", str(live), "--out-dir", str(out_dir)).returncode == 0
+    backup_file = next(out_dir.glob("compliance-*.db"))
+
+    # Change the live DB so the safety copy is distinguishable from the restore.
+    conn = sqlite3.connect(live)
+    conn.execute("DELETE FROM documents WHERE document_id = 'DOC-005'")
+    conn.commit()
+    conn.close()
+    assert "DOC-005" not in {
+        row[0] for row in sqlite3.connect(live).execute("SELECT document_id FROM documents")
+    }
+
+    result = _run(RESTORE_SCRIPT, str(backup_file), "--db", str(live))
+    assert result.returncode == 0, result.stderr
+    assert "before-restore" in result.stdout
+
+    safety = next(tmp_path.glob("compliance.db.before-restore-*"))
+    safety_ids = {
+        row[0] for row in sqlite3.connect(safety).execute("SELECT document_id FROM documents")
+    }
+    restored_ids = {
+        row[0] for row in sqlite3.connect(live).execute("SELECT document_id FROM documents")
+    }
+    assert "DOC-005" not in safety_ids
+    assert "DOC-005" in restored_ids
