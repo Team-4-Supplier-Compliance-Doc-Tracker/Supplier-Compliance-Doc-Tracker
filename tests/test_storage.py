@@ -1,9 +1,11 @@
 import dataclasses
 import sqlite3
+from datetime import date, datetime
 
 import pytest
 
 from compliance import storage
+from compliance.models import AtRiskPart, Flag
 
 TABLES = {"suppliers", "parts", "documents", "compliance_checks", "flags", "at_risk_parts"}
 
@@ -153,3 +155,152 @@ def test_save_parts_closes_connection(tmp_db, sample_parts):
     storage.save_parts(tmp_db, sample_parts)
     with pytest.raises(sqlite3.ProgrammingError):
         tmp_db.execute("SELECT 1")
+
+
+# save_check / supplier_history / parts_at_risk
+
+AS_OF = date(2026, 10, 26)
+
+# Expected 1.0.0 output for the sample data on 2026-10-26 (plan.md section 3.2).
+CHECK_FLAGS = [
+    Flag("expired", "SUP-102", "safety_cert", "DOC-005", date(2026, 6, 1)),
+    Flag("expiring_soon", "SUP-102", "env_declaration", "DOC-006", date(2026, 11, 20)),
+    Flag("expiring_soon", "SUP-103", "env_declaration", "DOC-008", date(2026, 10, 26)),
+    Flag("missing", "SUP-103", "safety_cert"),
+    Flag("missing", "SUP-105", "env_declaration"),
+    Flag("missing", "SUP-106", "quality_cert"),
+    Flag("missing", "SUP-106", "env_declaration"),
+]
+CHECK_AT_RISK = [
+    AtRiskPart("PRT-5002", "SUP-102", ("expired safety_cert",)),
+    AtRiskPart("PRT-5003", "SUP-103", ("missing safety_cert",)),
+    AtRiskPart("PRT-5005", "SUP-106", ("missing quality_cert", "missing env_declaration")),
+    AtRiskPart("PRT-5006", "SUP-105", ("missing env_declaration",)),
+]
+
+
+@pytest.fixture
+def seeded_path(tmp_db, sample_docs, sample_parts):
+    path = _db_path(tmp_db)
+    storage.save_documents(tmp_db, sample_docs)
+    storage.save_parts(storage.connect(path), sample_parts)
+    return path
+
+
+def _save_check(path, flags=CHECK_FLAGS, at_risk=CHECK_AT_RISK, as_of=AS_OF, version="1.0.0"):
+    return storage.save_check(storage.connect(path), as_of, version, flags, at_risk)
+
+
+def test_save_check_stores_flags(seeded_path):
+    check_id = _save_check(seeded_path)
+    rows = _fetch(
+        seeded_path,
+        f"SELECT flag_type, supplier_id, document_type, document_id, expiry_date FROM flags WHERE check_id = {check_id}",
+    )
+    assert sorted(rows, key=str) == sorted(
+        [
+            (f.flag_type, f.supplier_id, f.document_type, f.document_id, f.expiry_date and f.expiry_date.isoformat())
+            for f in CHECK_FLAGS
+        ],
+        key=str,
+    )
+
+
+def test_check_records_version_and_as_of(seeded_path):
+    check_id = _save_check(seeded_path, version="1.1.0")
+    [(as_of, version, run_at)] = _fetch(
+        seeded_path, f"SELECT as_of_date, tool_version, run_at FROM compliance_checks WHERE check_id = {check_id}"
+    )
+    assert (as_of, version) == ("2026-10-26", "1.1.0")
+    assert datetime.fromisoformat(run_at)
+
+
+def test_missing_flag_has_null_document_id(seeded_path):
+    _save_check(seeded_path)
+    rows = _fetch(seeded_path, "SELECT document_id, expiry_date FROM flags WHERE flag_type = 'missing'")
+    assert rows and all(row == (None, None) for row in rows)
+
+
+def test_at_risk_parts_saved_per_check(seeded_path):
+    first = _save_check(seeded_path)
+    second = _save_check(seeded_path, at_risk=CHECK_AT_RISK[:1])
+    rows = _fetch(seeded_path, "SELECT check_id, part_number, supplier_id FROM at_risk_parts ORDER BY check_id, part_number")
+    assert rows == [
+        (first, "PRT-5002", "SUP-102"),
+        (first, "PRT-5003", "SUP-103"),
+        (first, "PRT-5005", "SUP-106"),
+        (first, "PRT-5006", "SUP-105"),
+        (second, "PRT-5002", "SUP-102"),
+    ]
+
+
+def test_at_risk_part_with_two_reasons(seeded_path):
+    _save_check(seeded_path)
+    rows = _fetch(seeded_path, "SELECT reasons FROM at_risk_parts WHERE part_number = 'PRT-5005'")
+    assert rows == [("missing quality_cert; missing env_declaration",)]
+
+
+def test_save_check_upserts_supplier_from_flag(seeded_path):
+    _save_check(seeded_path, flags=[Flag("missing", "SUP-999", "quality_cert")], at_risk=[])
+    assert ("SUP-999",) in _fetch(seeded_path, "SELECT supplier_id FROM suppliers")
+
+
+def test_failed_check_save_rolls_back(seeded_path):
+    unsaved_part = AtRiskPart("PRT-NOPE", "SUP-102", ("expired safety_cert",))
+    with pytest.raises(sqlite3.IntegrityError):
+        _save_check(seeded_path, at_risk=CHECK_AT_RISK + [unsaved_part])
+    assert _fetch(seeded_path, "SELECT COUNT(*) FROM compliance_checks") == [(0,)]
+    assert _fetch(seeded_path, "SELECT COUNT(*) FROM flags") == [(0,)]
+    assert _fetch(seeded_path, "SELECT COUNT(*) FROM at_risk_parts") == [(0,)]
+
+
+def test_save_check_closes_connection(seeded_path):
+    conn = storage.connect(seeded_path)
+    storage.save_check(conn, AS_OF, "1.0.0", CHECK_FLAGS, CHECK_AT_RISK)
+    with pytest.raises(sqlite3.ProgrammingError):
+        conn.execute("SELECT 1")
+
+
+def test_supplier_history_returns_all_checks_newest_first(seeded_path):
+    first = _save_check(seeded_path)
+    second = _save_check(seeded_path, flags=[Flag("missing", "SUP-103", "safety_cert")], at_risk=[], as_of=date(2026, 10, 27))
+    history = storage.supplier_history(storage.connect(seeded_path), "SUP-103")
+    assert [row["check_id"] for row in history] == [second, first, first]
+    assert history[0] == {
+        "check_id": second,
+        "run_at": history[0]["run_at"],
+        "as_of_date": "2026-10-27",
+        "tool_version": "1.0.0",
+        "flag_type": "missing",
+        "document_type": "safety_cert",
+        "document_id": None,
+        "expiry_date": None,
+    }
+    assert {row["flag_type"] for row in history if row["check_id"] == first} == {"expiring_soon", "missing"}
+
+
+def test_supplier_history_unknown_supplier_is_empty(seeded_path):
+    _save_check(seeded_path)
+    assert storage.supplier_history(storage.connect(seeded_path), "SUP-404") == []
+
+
+def test_parts_at_risk_reflects_latest_check_only(seeded_path):
+    _save_check(seeded_path)
+    _save_check(seeded_path, at_risk=[CHECK_AT_RISK[1]])
+    rows = storage.parts_at_risk(storage.connect(seeded_path))
+    assert [(row["part_number"], row["description"], row["supplier_id"], row["reasons"]) for row in rows] == [
+        ("PRT-5003", "Laptop cooling fan", "SUP-103", "missing safety_cert")
+    ]
+
+
+def test_parts_at_risk_empty_before_any_check(seeded_path):
+    assert storage.parts_at_risk(storage.connect(seeded_path)) == []
+
+
+def test_query_functions_close_connection(seeded_path):
+    _save_check(seeded_path)
+    for query in (lambda c: storage.supplier_history(c, "SUP-103"), storage.parts_at_risk):
+        conn = storage.connect(seeded_path)
+        query(conn)
+        with pytest.raises(sqlite3.ProgrammingError):
+            conn.execute("SELECT 1")
