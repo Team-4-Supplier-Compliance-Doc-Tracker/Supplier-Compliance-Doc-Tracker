@@ -43,7 +43,10 @@ def render_report(flags, at_risk, rejected) -> str:
 
     if at_risk:
         lines.append("Parts at risk")
-        lines += [f"  {part.part_number}  {'; '.join(part.reasons)}" for part in sorted(at_risk, key=lambda p: p.part_number)]
+        lines += [
+            f"  {part.part_number}  {part.supplier_id}  {'; '.join(part.reasons)}"
+            for part in sorted(at_risk, key=lambda p: p.part_number)
+        ]
         lines.append("")
 
     lines.append("Rejected records")

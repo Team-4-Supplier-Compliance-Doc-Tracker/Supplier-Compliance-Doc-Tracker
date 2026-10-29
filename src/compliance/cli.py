@@ -62,9 +62,25 @@ def _run(args):
     check_id = storage.save_check(storage.connect(), today, __version__, flags, at_risk)
 
     print(f"Compliance report as of {today.isoformat()} (tool {__version__}, check {check_id})")
+    print(_summary(documents, parts, flags, at_risk, rejected_documents + rejected_parts))
     print()
     print(render_report(flags, at_risk, rejected_documents + rejected_parts), end="")
     return 0
+
+
+def _count(n, word):
+    return f"{n} {word}" if n == 1 else f"{n} {word}s"
+
+
+def _summary(documents, parts, flags, at_risk, rejected):
+    # One line so the reader sees the scope of the check, including suppliers that are fine.
+    suppliers = {item.supplier_id for item in [*documents, *parts]}
+    clean = suppliers - {flag.supplier_id for flag in flags}
+    return (
+        f"Checked {_count(len(suppliers), 'supplier')} and {_count(len(parts), 'part')}: "
+        f"{_count(len(clean), 'supplier')} with no issues, {_count(len(at_risk), 'part')} at risk, "
+        f"{_count(len(flags), 'flag')}, {_count(len(rejected), 'rejected record')}"
+    )
 
 
 def _history(args):
@@ -75,7 +91,7 @@ def _history(args):
     print(f"History for {args.supplier_id}")
     if not rows:
         known = storage.supplier_known(storage.connect(), args.supplier_id)
-        print("  no flags in any saved check" if known else "  no record of this supplier")
+        print("  no flags in any saved check" if known else "  no saved record of this supplier (rejected documents are not stored)")
         return 0
 
     for check_id, check_rows in groupby(rows, key=lambda row: row["check_id"]):
