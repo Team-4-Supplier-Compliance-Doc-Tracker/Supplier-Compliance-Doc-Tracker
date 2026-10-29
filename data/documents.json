@@ -1,0 +1,185 @@
+[
+  {
+    "document_id": "DOC-001",
+    "supplier_id": "SUP-101",
+    "document_type": "quality_cert",
+    "issue_date": "2024-01-15",
+    "expiry_date": null
+  },
+  {
+    "document_id": "DOC-002",
+    "supplier_id": "SUP-101",
+    "document_type": "safety_cert",
+    "issue_date": "2026-03-01",
+    "expiry_date": "2027-03-01"
+  },
+  {
+    "document_id": "DOC-003",
+    "supplier_id": "SUP-101",
+    "document_type": "env_declaration",
+    "issue_date": "2026-02-10",
+    "expiry_date": "2027-02-10"
+  },
+  {
+    "document_id": "DOC-004",
+    "supplier_id": "SUP-102",
+    "document_type": "quality_cert",
+    "issue_date": "2023-06-01",
+    "expiry_date": null
+  },
+  {
+    "document_id": "DOC-005",
+    "supplier_id": "SUP-102",
+    "document_type": "safety_cert",
+    "issue_date": "2025-06-01",
+    "expiry_date": "2026-06-01"
+  },
+  {
+    "document_id": "DOC-006",
+    "supplier_id": "SUP-102",
+    "document_type": "env_declaration",
+    "issue_date": "2025-11-20",
+    "expiry_date": "2026-11-20"
+  },
+  {
+    "document_id": "DOC-007",
+    "supplier_id": "SUP-103",
+    "document_type": "quality_cert",
+    "issue_date": "2024-04-05",
+    "expiry_date": null
+  },
+  {
+    "document_id": "DOC-008",
+    "supplier_id": "SUP-103",
+    "document_type": "env_declaration",
+    "issue_date": "2025-10-26",
+    "expiry_date": "2026-10-26"
+  },
+  {
+    "document_id": "DOC-009",
+    "supplier_id": "",
+    "document_type": "quality_cert",
+    "issue_date": "2026-05-01",
+    "expiry_date": null
+  },
+  {
+    "document_id": "DOC-009b",
+    "document_type": "quality_cert",
+    "issue_date": "2026-05-01",
+    "expiry_date": null
+  },
+  {
+    "document_id": "DOC-010",
+    "supplier_id": "SUP-104",
+    "document_type": "iso_badge",
+    "issue_date": "2026-05-01",
+    "expiry_date": "2027-05-01"
+  },
+  {
+    "document_id": "DOC-011",
+    "supplier_id": "SUP-104",
+    "document_type": "safety_cert",
+    "issue_date": "2026-13-45",
+    "expiry_date": "2027-01-01"
+  },
+  {
+    "document_id": "DOC-011b",
+    "supplier_id": "SUP-104",
+    "document_type": "safety_cert",
+    "issue_date": "2026-01-01",
+    "expiry_date": 20270101
+  },
+  {
+    "document_id": "DOC-012",
+    "supplier_id": "SUP-104",
+    "document_type": "safety_cert",
+    "issue_date": "2026-01-01",
+    "expiry_date": null
+  },
+  {
+    "document_id": "DOC-013",
+    "supplier_id": "SUP-105",
+    "document_type": "safety_cert",
+    "issue_date": "2026-09-01",
+    "expiry_date": "2027-09-01",
+    "status": "pending"
+  },
+  {
+    "document_id": "DOC-014",
+    "supplier_id": "SUP-105",
+    "document_type": "quality_cert",
+    "issue_date": "2024-09-01",
+    "expiry_date": null
+  },
+  {
+    "document_id": "DOC-015",
+    "supplier_id": "SUP-105",
+    "document_type": "env_declaration",
+    "issue_date": "2026-09-01",
+    "expiry_date": "2027-09-01",
+    "status": "maybe"
+  },
+  {
+    "document_id": "DOC-101",
+    "supplier_id": "SUP-201",
+    "document_type": "quality_cert",
+    "issue_date": "2026-06-24",
+    "expiry_date": null
+  },
+  {
+    "document_id": "DOC-102",
+    "supplier_id": "SUP-201",
+    "document_type": "safety_cert",
+    "issue_date": "2026-06-24",
+    "expiry_date": "2027-06-24"
+  },
+  {
+    "document_id": "DOC-103",
+    "supplier_id": "SUP-201",
+    "document_type": "env_declaration",
+    "issue_date": "2026-06-24",
+    "expiry_date": "2027-06-24"
+  },
+  {
+    "document_id": "DOC-104",
+    "supplier_id": "SUP-202",
+    "document_type": "quality_cert",
+    "issue_date": "2026-03-09",
+    "expiry_date": null
+  },
+  {
+    "document_id": "DOC-105",
+    "supplier_id": "SUP-202",
+    "document_type": "safety_cert",
+    "issue_date": "2026-03-09",
+    "expiry_date": "2027-03-09"
+  },
+  {
+    "document_id": "DOC-106",
+    "supplier_id": "SUP-202",
+    "document_type": "env_declaration",
+    "issue_date": "2026-03-09",
+    "expiry_date": "2027-03-09"
+  },
+  {
+    "document_id": "DOC-107",
+    "supplier_id": "SUP-203",
+    "document_type": "quality_cert",
+    "issue_date": "2026-07-04",
+    "expiry_date": null
+  },
+  {
+    "document_id": "DOC-108",
+    "supplier_id": "SUP-203",
+    "document_type": "safety_cert",
+    "issue_date": "2026-07-04",
+    "expiry_date": "2027-07-04"
+  },
+  {
+    "document_id": "DOC-109",
+    "supplier_id": "SUP-203",
+    "document_type": "env_declaration",
+    "issue_date": "2026-07-04",
+    "expiry_date": "2027-07-04"
+  }
+]

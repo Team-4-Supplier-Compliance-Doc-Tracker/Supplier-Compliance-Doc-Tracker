@@ -1,0 +1,33 @@
+{
+  "today": "2026-10-26",
+  "expiring_soon_days": 45,
+  "document_types": [
+    "quality_cert",
+    "safety_cert",
+    "env_declaration"
+  ],
+  "expiring_types": [
+    "safety_cert",
+    "env_declaration"
+  ],
+  "required_documents": {
+    "cables": [
+      "quality_cert",
+      "safety_cert",
+      "env_declaration"
+    ],
+    "mechanical": [
+      "quality_cert",
+      "env_declaration"
+    ],
+    "electrical": [
+      "quality_cert",
+      "safety_cert",
+      "env_declaration"
+    ],
+    "semiconductors": [
+      "quality_cert",
+      "env_declaration"
+    ]
+  }
+}
