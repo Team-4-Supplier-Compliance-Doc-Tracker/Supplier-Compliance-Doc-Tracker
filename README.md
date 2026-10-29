@@ -42,11 +42,12 @@ Two failure levels:
 
 ```json
 {
-  "document_id": "DOC-004",
+  "document_id": "DOC-005",
   "supplier_id": "SUP-102",
-  "document_type": "quality_cert",
+  "document_type": "safety_cert",
   "issue_date": "2025-06-01",
-  "expiry_date": "2026-06-01"
+  "expiry_date": "2026-06-01",
+  "status": "approved"
 }
 ```
 
@@ -56,7 +57,8 @@ Two failure levels:
 | `supplier_id` | string | required; `""`, `null`, or absent key → rejected "missing supplier ID" |
 | `document_type` | string | must be in `settings.document_types`, else rejected "unknown document type" |
 | `issue_date` | `YYYY-MM-DD` string | required; unparseable or non-string → rejected "invalid date" |
-| `expiry_date` | `YYYY-MM-DD` string | same |
+| `expiry_date` | `YYYY-MM-DD` string or `null` | `null` allowed only when the type is **not** in `settings.expiring_types`; `null` on an expiring type, unparseable, or non-string → rejected "invalid date" |
+| `status` | `"approved"` or `"pending"` | optional, defaults to `"approved"`; any other value → rejected "unknown status". Stored from 1.0.0, acted on by the 1.1.0 rule |
 
 Records are flat. Documents are never nested under suppliers. Extra keys are ignored.
 
@@ -65,7 +67,7 @@ Records are flat. Documents are never nested under suppliers. Extra keys are ign
 ```json
 {
   "part_number": "PRT-5002",
-  "description": "12V relay",
+  "description": "Monitor power switch",
   "part_category": "electrical",
   "supplier_id": "SUP-102"
 }
@@ -75,7 +77,7 @@ Records are flat. Documents are never nested under suppliers. Extra keys are ign
 |---|---|---|
 | `part_number` | string | required, unique |
 | `description` | string | required |
-| `part_category` | string | must appear in `settings.required_documents` |
+| `part_category` | string | must be a key in `settings.required_documents`, else rejected "unknown part category" |
 | `supplier_id` | string | required; same missing rule as documents |
 
 ### 4. Settings file
@@ -83,17 +85,22 @@ Records are flat. Documents are never nested under suppliers. Extra keys are ign
 ```json
 {
   "today": "2026-10-26",
-  "expiring_soon_days": 30,
+  "expiring_soon_days": 45,
   "document_types": ["quality_cert", "safety_cert", "env_declaration"],
+  "expiring_types": ["safety_cert", "env_declaration"],
   "required_documents": {
-    "fastener":   ["quality_cert"],
-    "electrical": ["quality_cert", "safety_cert", "env_declaration"],
-    "seal":       ["quality_cert", "env_declaration"]
+    "cables":         ["quality_cert", "safety_cert", "env_declaration"],
+    "mechanical":     ["quality_cert", "env_declaration"],
+    "electrical":     ["quality_cert", "safety_cert", "env_declaration"],
+    "semiconductors": ["quality_cert", "env_declaration"]
   }
 }
 ```
 
-All four keys are required. The compliance manager changes required documents or the warning window here, never in code.
+All five keys are required. The compliance manager changes required documents, expiring types, or the warning window here, never in code.
+
+- Safety certificates are required only for **cables** and **electrical**: mains-rated parts fall under UL 61058-1 / the CE Low Voltage Directive; mechanical parts and low-voltage logic do not.
+- `expiring_types` leaves out `quality_cert` because the customer says quality certificates have no expiry. `safety_cert` is in the list pending Q8 (UL listings need annual factory audits, so we assume they expire).
 
 ### 5. How the tool knows today's date
 
@@ -107,18 +114,19 @@ Tests always pass a fixed date, so results never change.
 
 ### 6. Flag definitions
 
-With `today` resolved as above and `N = expiring_soon_days`:
+With `today` resolved as above and `N = expiring_soon_days`. Rules that compare dates skip documents whose `expiry_date` is `null`.
 
-| Flag | Definition | Example (today = 2026-10-26, N = 30) |
+| Flag | Definition | Example (today = 2026-10-26, N = 45) |
 |---|---|---|
-| **expired** | `expiry_date < today` | DOC-004, expiry 2026-06-01 |
-| **expiring soon** | `today <= expiry_date <= today + N` | DOC-005, expiry 2026-11-10 |
-| **missing** | a part's category requires a document type and the part's supplier has no clean document of that type | SUP-103 supplies an electrical part but has no `env_declaration` |
-| **at risk** (part) | the part's supplier has at least one **expired** or **missing** required document | PRT-5002, because SUP-102's quality cert is expired |
+| **expired** | `expiry_date < today` | DOC-005, expiry 2026-06-01 |
+| **expiring soon** | `today <= expiry_date <= today + N` | DOC-006, expiry 2026-11-20 |
+| **missing** | a part's category requires a document type and the part's supplier has no clean document of that type (from 1.1.0: no clean, **approved** document) | SUP-103 supplies an electrical part but has no `safety_cert` |
+| **pending** (1.1.0) | a clean document with `status == "pending"` | DOC-013 |
+| **at risk** (part) | the part's supplier has an **expired** or **missing** document **of a type that part's category requires** | PRT-5003 (electrical, needs safety) is at risk; PRT-5004 (semiconductors, same supplier, no safety needed) is not |
 
 **Expiry date equal to today → expiring soon, not expired.** A document is valid through its expiry date.
 
-**Expiring soon does not make a part at risk.** It is a warning only.
+**Expiring soon and pending never make a part at risk.** They are warnings only. (In 1.1.0 a supplier whose only safety cert is pending also gets a **missing** flag, and that missing flag does count.)
 
 A **bad record** (broken object, rejected, never saved) is different from a **flagged document** (valid object, saved, with a compliance problem).
 
@@ -129,22 +137,23 @@ Environment variable: **`COMPLIANCE_DB_PATH`**. Default `./data/compliance.db`. 
 ```
 suppliers          supplier_id PK
 parts              part_number PK, description, part_category, supplier_id FK→suppliers
-documents          document_id PK, supplier_id FK→suppliers, document_type, issue_date, expiry_date
+documents          document_id PK, supplier_id FK→suppliers, document_type, issue_date,
+                   expiry_date (NULL allowed), status
 compliance_checks  check_id PK autoincrement, run_at, as_of_date, tool_version
 flags              flag_id PK autoincrement, check_id FK→compliance_checks, flag_type,
                    supplier_id FK→suppliers, document_id FK→documents (NULL for missing),
-                   document_type, expiry_date (NULL for missing), part_number FK→parts (set for at-risk rows)
+                   document_type, expiry_date (NULL allowed), part_number FK→parts (set for at-risk rows)
 ```
 
 - `PRAGMA foreign_keys = ON` at the start of every connection.
 - Dates stored as ISO text.
 - A batch of documents is saved in one transaction. A compliance check and all of its flags are saved in one transaction. A failure leaves nothing half-saved.
-- A `document_id` that already exists on save: **(decide Monday — skip or raise)**.
+- A `document_id` that already exists on save is **skipped**: saving the same batch twice is a no-op (decided 2026-10-28).
 
 ### 8. Releases
 
-- **1.0.0** — everything above.
-- **1.1.0** — adds one rule, **expiry before issue**: a clean document whose `expiry_date < issue_date` gets the flag `invalid_validity_window`. It is a flag, not a rejection, and does not make a part at risk.
+- **1.0.0** — expired, expiring soon, missing; at risk per part; `status` stored but unused.
+- **1.1.0** — adds one rule, **PendingDocumentRule**: a clean document with `status == "pending"` gets the flag `pending`, because the customer asked for a pending / approved / missing view (Q6). It is a flag, not a rejection, and does not make a part at risk.
 
 ### 9. Friday presentation
 
