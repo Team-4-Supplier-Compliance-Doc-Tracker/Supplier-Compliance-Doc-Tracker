@@ -48,12 +48,30 @@ def test_run_end_to_end_writes_db_and_prints_report(data_dir, db_path, capsys):
     out = capsys.readouterr().out
     assert f"Compliance report as of 2026-10-26 (tool {__version__}, check 1)" in out
     assert "SUP-102  safety_cert  2026-06-01  DOC-005" in out
-    assert "PRT-5005  missing quality_cert; missing env_declaration" in out
+    assert "PRT-5005  SUP-106  missing quality_cert; missing env_declaration" in out
     assert "PRT-5099  unknown part category" in out
     assert _fetch(db_path, "SELECT as_of_date, tool_version FROM compliance_checks") == [("2026-10-26", __version__)]
     assert _fetch(db_path, "SELECT COUNT(*) FROM flags") == [(7,)]
     parts = {row[0] for row in _fetch(db_path, "SELECT part_number FROM at_risk_parts")}
     assert parts == {"PRT-5002", "PRT-5003", "PRT-5005", "PRT-5006"}
+
+
+def test_run_prints_summary_line_under_header(data_dir, db_path, capsys):
+    main(_run_args(data_dir))
+    lines = capsys.readouterr().out.splitlines()
+    assert lines[1] == "Checked 5 suppliers and 6 parts: 1 supplier with no issues, 4 parts at risk, 7 flags, 8 rejected records"
+
+
+def test_run_summary_on_a_day_with_no_issues(data_dir, db_path, capsys):
+    # Only SUP-101, which holds every document a cable needs: nothing to flag, nothing rejected.
+    documents = json.loads((data_dir / "documents.json").read_text())
+    parts = json.loads((data_dir / "parts.json").read_text())
+    (data_dir / "documents.json").write_text(json.dumps([d for d in documents if d.get("supplier_id") == "SUP-101"]))
+    (data_dir / "parts.json").write_text(json.dumps([p for p in parts if p["part_number"] == "PRT-5001"]))
+    main(_run_args(data_dir))
+    out = capsys.readouterr().out
+    assert "Checked 1 supplier and 1 part: 1 supplier with no issues, 0 parts at risk, 0 flags, 0 rejected records" in out
+    assert "No issues found" in out
 
 
 def test_run_twice_keeps_one_copy_of_inputs_and_two_checks(data_dir, db_path, capsys):
@@ -129,7 +147,17 @@ def test_history_known_supplier_without_flags(data_dir, db_path, capsys):
 
 def test_history_unknown_supplier(db_path, capsys):
     assert main(["history", "SUP-404"]) == 0
-    assert capsys.readouterr().out == "History for SUP-404\n  no record of this supplier\n"
+    assert capsys.readouterr().out == (
+        "History for SUP-404\n  no saved record of this supplier (rejected documents are not stored)\n"
+    )
+
+
+def test_history_supplier_whose_documents_were_all_rejected(data_dir, db_path, capsys):
+    # SUP-104 is in documents.json, but every one of its documents is rejected, so nothing is saved.
+    main(_run_args(data_dir))
+    capsys.readouterr()
+    assert main(["history", "SUP-104"]) == 0
+    assert "no saved record of this supplier (rejected documents are not stored)" in capsys.readouterr().out
 
 
 # entry point
