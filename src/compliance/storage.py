@@ -134,6 +134,12 @@ def supplier_history(conn, supplier_id) -> list[dict]:
     )
 
 
+def supplier_known(conn, supplier_id) -> bool:
+    # True when the supplier has a row, i.e. it appeared in a saved document, part or flag.
+    rows = _query(conn, "SELECT 1 FROM suppliers WHERE supplier_id = ?", (supplier_id,))
+    return bool(rows)
+
+
 def parts_at_risk(conn) -> list[dict]:
     # At-risk parts from the latest check only, with the part description.
     return _query(
