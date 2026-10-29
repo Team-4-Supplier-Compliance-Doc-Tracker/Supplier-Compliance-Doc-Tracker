@@ -11,6 +11,8 @@ NO_EXPIRY = "—"
 def _flag_line(flag, show_type=False):
     expiry = flag.expiry_date.isoformat() if flag.expiry_date is not None else NO_EXPIRY
     line = f"  {flag.supplier_id}  {flag.document_type}  {expiry}"
+    if flag.document_id:
+        line += f"  {flag.document_id}"
     return f"{line}  ({flag.flag_type})" if show_type else line
 
 
