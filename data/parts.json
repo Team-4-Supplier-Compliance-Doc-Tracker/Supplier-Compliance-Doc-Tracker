@@ -1,0 +1,62 @@
+[
+  {
+    "part_number": "PRT-5001",
+    "description": "AC power cord",
+    "part_category": "cables",
+    "supplier_id": "SUP-101"
+  },
+  {
+    "part_number": "PRT-5002",
+    "description": "Monitor power switch",
+    "part_category": "electrical",
+    "supplier_id": "SUP-102"
+  },
+  {
+    "part_number": "PRT-5003",
+    "description": "Laptop cooling fan",
+    "part_category": "electrical",
+    "supplier_id": "SUP-103"
+  },
+  {
+    "part_number": "PRT-5004",
+    "description": "Laptop motherboard",
+    "part_category": "semiconductors",
+    "supplier_id": "SUP-103"
+  },
+  {
+    "part_number": "PRT-5005",
+    "description": "Chassis hinge",
+    "part_category": "mechanical",
+    "supplier_id": "SUP-106"
+  },
+  {
+    "part_number": "PRT-5006",
+    "description": "Display panel",
+    "part_category": "electrical",
+    "supplier_id": "SUP-105"
+  },
+  {
+    "part_number": "PRT-5099",
+    "description": "Rubber gasket",
+    "part_category": "seal",
+    "supplier_id": "SUP-101"
+  },
+  {
+    "part_number": "PRT-6001",
+    "description": "DC power cable",
+    "part_category": "cables",
+    "supplier_id": "SUP-201"
+  },
+  {
+    "part_number": "PRT-6002",
+    "description": "Power button switch",
+    "part_category": "electrical",
+    "supplier_id": "SUP-202"
+  },
+  {
+    "part_number": "PRT-6003",
+    "description": "Display ribbon cable",
+    "part_category": "cables",
+    "supplier_id": "SUP-203"
+  }
+]
