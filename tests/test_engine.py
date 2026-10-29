@@ -1,4 +1,7 @@
+from datetime import date
+
 from compliance.engine import run_rules
+from compliance.models import SupplierDocument
 
 
 def at_risk_by_part(at_risk):
@@ -7,8 +10,8 @@ def at_risk_by_part(at_risk):
 
 def test_collects_flags_from_all_rules(sample_docs, sample_parts, settings, today):
     flags, _ = run_rules(sample_docs, sample_parts, settings, today)
-    assert {flag.flag_type for flag in flags} == {"expired", "expiring_soon", "missing"}
-    assert len(flags) == 7   # 1 expired + 2 expiring soon + 4 missing
+    assert {flag.flag_type for flag in flags} == {"expired", "expiring_soon", "missing", "pending"}
+    assert len(flags) == 9   # 1 expired + 2 expiring soon + 5 missing + 1 pending
 
 
 def test_at_risk_from_expired(sample_docs, sample_parts, settings, today):
@@ -33,6 +36,16 @@ def test_expiring_soon_does_not_make_at_risk(sample_docs, sample_parts, settings
     assert at_risk == []
 
 
+def test_pending_does_not_make_at_risk(sample_docs, sample_parts, settings, today):
+    # SUP-101 already holds an approved safety_cert, so a second, pending one is only a warning.
+    renewal = SupplierDocument("DOC-900", "SUP-101", "safety_cert", date(2026, 10, 1), date(2027, 10, 1), "pending")
+    sup_101_docs = [document for document in sample_docs if document.supplier_id == "SUP-101"] + [renewal]
+    power_cord = [part for part in sample_parts if part.part_number == "PRT-5001"]
+    flags, at_risk = run_rules(sup_101_docs, power_cord, settings, today)
+    assert [flag.flag_type for flag in flags] == ["pending"]
+    assert at_risk == []
+
+
 def test_clean_supplier_not_at_risk(sample_docs, sample_parts, settings, today):
     _, at_risk = run_rules(sample_docs, sample_parts, settings, today)
     assert "PRT-5001" not in at_risk_by_part(at_risk)
@@ -44,7 +57,7 @@ def test_at_risk_reasons_listed(sample_docs, sample_parts, settings, today):
     assert set(parts) == {"PRT-5002", "PRT-5003", "PRT-5005", "PRT-5006"}
     assert parts["PRT-5005"].supplier_id == "SUP-106"
     assert parts["PRT-5005"].reasons == ("missing quality_cert", "missing env_declaration")
-    assert parts["PRT-5006"].reasons == ("missing env_declaration",)
+    assert parts["PRT-5006"].reasons == ("missing safety_cert", "missing env_declaration")
 
 
 def test_no_flags_day(sample_docs, sample_parts, settings, today):

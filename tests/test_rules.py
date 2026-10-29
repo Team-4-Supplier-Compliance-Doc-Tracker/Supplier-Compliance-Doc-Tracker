@@ -1,7 +1,7 @@
 from datetime import timedelta
 
 from compliance.models import Part, SupplierDocument
-from compliance.rules import ExpiredRule, ExpiringSoonRule, MissingDocumentRule
+from compliance.rules import ExpiredRule, ExpiringSoonRule, MissingDocumentRule, PendingDocumentRule
 from compliance.rules_base import RULES, ComplianceRule
 
 
@@ -80,6 +80,7 @@ def test_missing_rule_flags_absent_required_type(sample_docs, sample_parts, sett
     flags = MissingDocumentRule().evaluate(sample_docs, sample_parts, settings, today)
     assert missing_pairs(flags) == {
         ("SUP-103", "safety_cert"),
+        ("SUP-105", "safety_cert"),   # only one is DOC-013, which is pending
         ("SUP-105", "env_declaration"),
         ("SUP-106", "quality_cert"),
         ("SUP-106", "env_declaration"),
@@ -100,10 +101,27 @@ def test_missing_rule_one_flag_per_supplier_type(sample_docs, sample_parts, sett
     assert len(sup_103_safety) == 1
 
 
+def test_missing_rule_treats_pending_as_absent(sample_docs, sample_parts, settings, today):
+    # SUP-105's only safety_cert is DOC-013, still pending, so its electrical display panel lacks one.
+    display_panel = [part for part in sample_parts if part.part_number == "PRT-5006"]
+    flags = MissingDocumentRule().evaluate(sample_docs, display_panel, settings, today)
+    assert ("SUP-105", "safety_cert") in missing_pairs(flags)
+
+
+# PendingDocumentRule
+
+def test_pending_rule_flags_pending_document(sample_docs, sample_parts, settings, today):
+    flags = PendingDocumentRule().evaluate(sample_docs, sample_parts, settings, today)
+    assert flagged_ids(flags) == {"DOC-013"}
+    assert flags[0].supplier_id == "SUP-105"
+    assert flags[0].document_type == "safety_cert"
+    assert flags[0].expiry_date.isoformat() == "2027-09-01"
+
+
 # All rules
 
 def test_each_rule_returns_only_its_own_flag_type(sample_docs, sample_parts, settings, today):
-    for rule in (ExpiredRule(), ExpiringSoonRule(), MissingDocumentRule()):
+    for rule in (ExpiredRule(), ExpiringSoonRule(), MissingDocumentRule(), PendingDocumentRule()):
         flags = rule.evaluate(sample_docs, sample_parts, settings, today)
         assert flags, f"{rule.name} produced no flags on the sample data"
         assert {flag.flag_type for flag in flags} == {rule.name}
