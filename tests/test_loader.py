@@ -122,6 +122,38 @@ def test_rejected_record_carries_index_and_id(data_dir, settings):
     assert doc_010.source_file.endswith("documents.json")
 
 
+def suppliers_by_id(rejected):
+    return {record.raw_id: record.supplier_id for record in rejected}
+
+
+def test_rejected_record_names_supplier(data_dir, settings):
+    # Lets the report tie DOC-015 to SUP-105's missing env_declaration.
+    _, rejected = load_sample_documents(data_dir, settings)
+    assert suppliers_by_id(rejected) == {
+        "DOC-009": "",      # supplier_id is ""
+        "DOC-009b": "",     # supplier_id key absent
+        "DOC-010": "SUP-104",
+        "DOC-011": "SUP-104",
+        "DOC-011b": "SUP-104",
+        "DOC-012": "SUP-104",
+        "DOC-015": "SUP-105",
+    }
+
+
+def test_rejected_record_supplier_blank_when_not_text(tmp_path, settings):
+    path = write_json(tmp_path, [
+        {"document_id": "DOC-901", "supplier_id": 105, "document_type": "quality_cert", "issue_date": "2026-01-01", "expiry_date": None},
+        "not an object",
+    ])
+    _, rejected = load_documents(path, settings)
+    assert [record.supplier_id for record in rejected] == ["", ""]
+
+
+def test_rejected_part_names_supplier(data_dir, settings):
+    _, rejected = load_parts(data_dir / "parts.json", settings)
+    assert suppliers_by_id(rejected) == {"PRT-5099": "SUP-101"}
+
+
 def test_clean_and_rejected_counts_add_up(data_dir, settings):
     clean, rejected = load_sample_documents(data_dir, settings)
     assert len(clean) == 10
