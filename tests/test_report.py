@@ -24,9 +24,9 @@ def test_report_groups_flags_by_type():
     lines = _lines(render_report([_missing(), _expiring(), _expired()], [], []))
     expected = [
         "Expired",
-        "SUP-102  safety_cert  2026-06-01",
+        "SUP-102  safety_cert  2026-06-01  DOC-005",
         "Expiring soon",
-        "SUP-102  env_declaration  2026-11-20",
+        "SUP-102  env_declaration  2026-11-20  DOC-006",
         "Missing",
         "SUP-103  safety_cert  —",
     ]
@@ -37,6 +37,12 @@ def test_report_groups_flags_by_type():
 def test_report_lists_supplier_type_expiry():
     report = render_report([_expired()], [], [])
     assert "SUP-102  safety_cert  2026-06-01" in report
+
+
+def test_report_shows_document_id_when_flag_has_one():
+    lines = _lines(render_report([_expired(), _missing()], [], []))
+    assert "SUP-102  safety_cert  2026-06-01  DOC-005" in lines
+    assert "SUP-103  safety_cert  —" in lines
 
 
 def test_report_shows_dash_for_null_expiry():
@@ -112,5 +118,5 @@ def test_report_tolerates_unknown_flag_type():
     flags = [_expired(), Flag("pending", "SUP-105", "safety_cert", "DOC-013", date(2027, 9, 1))]
     report = render_report(flags, [], [])
     assert "Other" in report
-    assert "SUP-105  safety_cert  2027-09-01  (pending)" in _lines(report)
+    assert "SUP-105  safety_cert  2027-09-01  DOC-013  (pending)" in _lines(report)
     assert report.index("Expired") < report.index("Other")
