@@ -52,4 +52,4 @@ class Flag:
 class AtRiskPart:
     part_number: str
     supplier_id: str
-    reasons: tuple[str, ...]   # flag types that caused it
+    reasons: tuple[str, ...]   # one "<flag_type> <document_type>" per gap, e.g. "missing safety_cert"

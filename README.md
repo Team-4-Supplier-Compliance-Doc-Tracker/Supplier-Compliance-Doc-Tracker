@@ -142,13 +142,17 @@ documents          document_id PK, supplier_id FK→suppliers, document_type, is
 compliance_checks  check_id PK autoincrement, run_at, as_of_date, tool_version
 flags              flag_id PK autoincrement, check_id FK→compliance_checks, flag_type,
                    supplier_id FK→suppliers, document_id FK→documents (NULL for missing),
-                   document_type, expiry_date (NULL allowed), part_number FK→parts (set for at-risk rows)
+                   document_type, expiry_date (NULL allowed)
+at_risk_parts      check_id FK→compliance_checks, part_number FK→parts,
+                   supplier_id FK→suppliers, reasons          PK (check_id, part_number)
 ```
 
 - `PRAGMA foreign_keys = ON` at the start of every connection.
 - Dates stored as ISO text.
-- A batch of documents is saved in one transaction. A compliance check and all of its flags are saved in one transaction. A failure leaves nothing half-saved.
-- A `document_id` that already exists on save is **skipped**: saving the same batch twice is a no-op (decided 2026-10-28).
+- A batch of documents is saved in one transaction. A batch of parts is saved in one transaction. A compliance check, all of its flags, and all of its at-risk parts are saved in one transaction. A failure leaves nothing half-saved.
+- A `document_id` that already exists on save is **skipped**: saving the same batch twice is a no-op (decided 2026-10-28). A `part_number` that already exists is skipped the same way.
+- A flag describes one document or gap (`flags` has no part column). At-risk is a fact about a part, so it has its own table, one row per part per check. The CLI saves documents and parts before running the rules, so every at-risk row points at a saved part.
+- `reasons` holds display-ready strings of the form `<flag_type> <document_type>`, joined with `; ` (for example `missing quality_cert; missing env_declaration`). The report prints them as stored.
 
 ### 8. Releases
 
@@ -192,7 +196,7 @@ supplier-compliance-tracker/
 │       ├── settings.py           ← load_settings()
 │       ├── loader.py             ← read_json_list(), load_documents(), load_parts()
 │       ├── engine.py             ← run_rules()
-│       ├── storage.py            ← connect(), init_schema(), save_documents(), save_check(), supplier_history(), parts_at_risk()
+│       ├── storage.py            ← connect(), init_schema(), save_documents(), save_parts(), save_check(), supplier_history(), parts_at_risk()
 │       ├── schema.sql
 │       ├── report.py             ← render_report()
 │       └── cli.py                ← main(): `run`, `history`
