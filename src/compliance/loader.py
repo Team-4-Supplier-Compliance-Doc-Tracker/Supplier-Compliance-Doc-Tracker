@@ -46,14 +46,21 @@ STATUSES = ("approved", "pending")
 def _load_records(path, id_key, convert):
     clean, rejected = [], []
     for index, record in enumerate(read_json_list(path)):
-        raw_id = record.get(id_key) if isinstance(record, dict) else None
+        raw_id = _text_or_blank(record, id_key)
+        supplier_id = _text_or_blank(record, "supplier_id")
         try:
             if not isinstance(record, dict):
                 raise _Reject("not a JSON object")
             clean.append(convert(record))
         except _Reject as reason:
-            rejected.append(RejectedRecord(str(path), index, raw_id if isinstance(raw_id, str) else "", str(reason)))
+            rejected.append(RejectedRecord(str(path), index, raw_id, str(reason), supplier_id))
     return clean, rejected
+
+
+def _text_or_blank(record, key):
+    # For labelling a rejected record: the value if it is a string, else "".
+    value = record.get(key) if isinstance(record, dict) else None
+    return value if isinstance(value, str) else ""
 
 
 def _to_document(record, settings):
