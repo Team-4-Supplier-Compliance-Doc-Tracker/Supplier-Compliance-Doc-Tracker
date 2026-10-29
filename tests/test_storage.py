@@ -304,3 +304,16 @@ def test_query_functions_close_connection(seeded_path):
         query(conn)
         with pytest.raises(sqlite3.ProgrammingError):
             conn.execute("SELECT 1")
+
+
+def test_supplier_known(seeded_path):
+    assert storage.supplier_known(storage.connect(seeded_path), "SUP-101") is True
+    assert storage.supplier_known(storage.connect(seeded_path), "SUP-106") is True
+    assert storage.supplier_known(storage.connect(seeded_path), "SUP-404") is False
+
+
+def test_supplier_known_closes_connection(seeded_path):
+    conn = storage.connect(seeded_path)
+    storage.supplier_known(conn, "SUP-101")
+    with pytest.raises(sqlite3.ProgrammingError):
+        conn.execute("SELECT 1")
