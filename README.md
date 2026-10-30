@@ -194,7 +194,8 @@ supplier-compliance-tracker/
 │       │   ├── expired.py        ← ExpiredRule
 │       │   ├── expiring_soon.py  ← ExpiringSoonRule
 │       │   ├── missing.py        ← MissingDocumentRule
-│       │   └── validity_window.py ← ExpiryBeforeIssueRule (1.1.0)
+│       │   ├── current.py        ← current_documents(): newest approved document per supplier and type
+│       │   └── pending.py        ← PendingDocumentRule (1.1.0)
 │       ├── settings.py           ← load_settings()
 │       ├── loader.py             ← read_json_list(), load_documents(), load_parts()
 │       ├── engine.py             ← run_rules()

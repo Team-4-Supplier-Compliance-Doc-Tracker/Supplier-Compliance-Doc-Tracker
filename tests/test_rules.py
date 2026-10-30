@@ -1,7 +1,7 @@
 from datetime import date, timedelta
 
 from compliance.models import Part, SupplierDocument
-from compliance.rules import ExpiredRule, ExpiringSoonRule, MissingDocumentRule
+from compliance.rules import ExpiredRule, ExpiringSoonRule, MissingDocumentRule, PendingDocumentRule
 from compliance.rules_base import RULES, ComplianceRule
 
 
@@ -80,6 +80,7 @@ def test_missing_rule_flags_absent_required_type(sample_docs, sample_parts, sett
     flags = MissingDocumentRule().evaluate(sample_docs, sample_parts, settings, today)
     assert missing_pairs(flags) == {
         ("SUP-103", "safety_cert"),
+        ("SUP-105", "safety_cert"),   # only one is DOC-013, which is pending
         ("SUP-105", "env_declaration"),
         ("SUP-106", "quality_cert"),
         ("SUP-106", "env_declaration"),
@@ -98,6 +99,23 @@ def test_missing_rule_one_flag_per_supplier_type(sample_docs, sample_parts, sett
     flags = MissingDocumentRule().evaluate(sample_docs, parts, settings, today)
     sup_103_safety = [flag for flag in flags if (flag.supplier_id, flag.document_type) == ("SUP-103", "safety_cert")]
     assert len(sup_103_safety) == 1
+
+
+def test_missing_rule_treats_pending_as_absent(sample_docs, sample_parts, settings, today):
+    # SUP-105's only safety_cert is DOC-013, still pending, so its electrical display panel lacks one.
+    display_panel = [part for part in sample_parts if part.part_number == "PRT-5006"]
+    flags = MissingDocumentRule().evaluate(sample_docs, display_panel, settings, today)
+    assert ("SUP-105", "safety_cert") in missing_pairs(flags)
+
+
+# PendingDocumentRule
+
+def test_pending_rule_flags_pending_document(sample_docs, sample_parts, settings, today):
+    flags = PendingDocumentRule().evaluate(sample_docs, sample_parts, settings, today)
+    assert flagged_ids(flags) == {"DOC-013"}
+    assert flags[0].supplier_id == "SUP-105"
+    assert flags[0].document_type == "safety_cert"
+    assert flags[0].expiry_date.isoformat() == "2027-09-01"
 
 
 # Renewals: the old document stays on file for audit, only the newest one per supplier and type is judged
@@ -130,10 +148,18 @@ def test_two_expired_documents_flag_only_the_newest(sample_docs, sample_parts, s
     assert flagged_ids(flags) == {"DOC-005"}
 
 
+def test_pending_renewal_does_not_replace_approved_document(sample_docs, sample_parts, settings, today):
+    # 1.1.0: DOC-005-R1 is not approved yet, so expired DOC-005 is still the cert SUP-102 relies on.
+    pending_renewal = SupplierDocument("DOC-005-R1", "SUP-102", "safety_cert", date(2026, 6, 1), date(2027, 6, 1), "pending")
+    documents = sample_docs + [pending_renewal]
+    assert flagged_ids(ExpiredRule().evaluate(documents, sample_parts, settings, today)) == {"DOC-005"}
+    assert "DOC-005-R1" in flagged_ids(PendingDocumentRule().evaluate(documents, sample_parts, settings, today))
+
+
 # All rules
 
 def test_each_rule_returns_only_its_own_flag_type(sample_docs, sample_parts, settings, today):
-    for rule in (ExpiredRule(), ExpiringSoonRule(), MissingDocumentRule()):
+    for rule in (ExpiredRule(), ExpiringSoonRule(), MissingDocumentRule(), PendingDocumentRule()):
         flags = rule.evaluate(sample_docs, sample_parts, settings, today)
         assert flags, f"{rule.name} produced no flags on the sample data"
         assert {flag.flag_type for flag in flags} == {rule.name}
