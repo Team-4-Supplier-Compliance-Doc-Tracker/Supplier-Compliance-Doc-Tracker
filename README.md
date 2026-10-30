@@ -281,12 +281,12 @@ python -m compliance run \
 python -m compliance history SUP-103
 ```
 
-**Real output** (2026-10-30, tool `0.1.0`):
+**Real output** (2026-10-30, tool `1.0.0`):
 
 ```text
 $ python -m compliance run --documents data/documents.json --parts data/parts.json \
     --settings data/settings.json --today 2026-10-26
-Compliance report as of 2026-10-26 (tool 0.1.0, check 1)
+Compliance report as of 2026-10-26 (tool 1.0.0, check 1)
 Checked 8 suppliers and 9 parts: 4 suppliers with no issues, 4 parts at risk, 7 flags, 8 rejected records
 
 Expired
@@ -320,7 +320,7 @@ Rejected records
 
 $ python -m compliance history SUP-103
 History for SUP-103
-Check 1  as of 2026-10-26  (tool 0.1.0, run 2026-10-30T18:07:30+00:00)
+Check 1  as of 2026-10-26  (tool 1.0.0, run 2026-10-30T18:07:30+00:00)
   expiring_soon  env_declaration  2026-10-26  DOC-008
   missing  safety_cert  —
 ```
@@ -355,7 +355,7 @@ docker run --rm \
 $ docker run --rm -v compliance-data:/data -v "$PWD/data":/input compliance-tracker:1.0.0 \
     run --documents /input/documents.json --parts /input/parts.json \
         --settings /input/settings.json --today 2026-10-26
-Compliance report as of 2026-10-26 (tool 0.1.0, check 1)
+Compliance report as of 2026-10-26 (tool 1.0.0, check 1)
 Checked 8 suppliers and 9 parts: 4 suppliers with no issues, 4 parts at risk, 7 flags, 8 rejected records
 
 Expired
@@ -364,7 +364,7 @@ Expired
 
 $ docker run --rm -v compliance-data:/data compliance-tracker:1.0.0 history SUP-103
 History for SUP-103
-Check 1  as of 2026-10-26  (tool 0.1.0, run 2026-10-30T18:07:54+00:00)
+Check 1  as of 2026-10-26  (tool 1.0.0, run 2026-10-30T18:07:54+00:00)
   expiring_soon  env_declaration  2026-10-26  DOC-008
   missing  safety_cert  —
 ```

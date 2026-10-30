@@ -92,9 +92,25 @@ Restore verifies the backup with `integrity_check` first. If a live DB exists, i
 python scripts/restore.py data/backups/compliance-YYYYMMDDTHHMMSSZ.db --db data/compliance.db
 ```
 
+## Release 1.0.0 status (REL-03, 2026-10-30)
+
+- Version **1.0.0** set in `src/compliance/__init__.py` and `pyproject.toml`.
+- `CHANGELOG.md` dated **2026-10-30** for 1.0.0.
+- Full suite green: **115 passed** (integration test not xfailed — CLI-01 already on main).
+- Image built: `compliance-tracker:1.0.0` (reports `compliance.__version__ == "1.0.0"`).
+- **You still create and push the git tag** after this PR merges:
+
+```bash
+git checkout main && git pull
+git tag -a v1.0.0 -m "Release 1.0.0"
+git push origin v1.0.0
+```
+
+Then comment on Linear **RULE-03** that the 1.1.0 rule may merge (see paste text in the REL-03 PR).
+
 ## Throwaway-tag rehearsal (REL-02, 2026-10-30)
 
-Git tags for real releases wait for REL-03 / REL-04 (you create those). Image-tag rollback was rehearsed locally without touching git:
+Image-tag rollback was rehearsed locally without touching git:
 
 ```text
 $ docker build -t compliance-tracker:rel02-rehearsal .
