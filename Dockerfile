@@ -7,6 +7,7 @@ WORKDIR /app
 # Package is stdlib-only today (faker/pytest are for generate_data + CI, not the container).
 COPY pyproject.toml .
 COPY src/ ./src/
+COPY scripts/ ./scripts/
 
 ENV PYTHONPATH=/app/src
 ENV COMPLIANCE_DB_PATH=/data/compliance.db

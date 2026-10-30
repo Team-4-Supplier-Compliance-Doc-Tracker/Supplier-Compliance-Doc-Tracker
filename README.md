@@ -261,6 +261,18 @@ docker run --rm \
 
 `COMPLIANCE_DB_PATH` defaults to `/data/compliance.db` inside the container. Locally, the same env var defaults to `./data/compliance.db`.
 
+Backup and restore scripts ship in the image under `/app/scripts/`. Write backups to a **host** folder (not only the data volume), so a volume wipe cannot take the last good copy with it:
+
+```bash
+mkdir -p "$PWD/backups"
+docker run --rm \
+  -v compliance-data:/data \
+  -v "$PWD/backups":/backups \
+  --entrypoint python \
+  compliance-tracker:1.0.0 \
+  /app/scripts/backup.py --db /data/compliance.db --out-dir /backups
+```
+
 ### History survives `docker rm`
 
 The named volume keeps the database after the container is removed. Verify by writing a marker under `/data`, removing the container (`--rm`), then reading it back from a new container on the same volume:
