@@ -64,7 +64,9 @@ db.sqlite3-journal
 
 # Compliance tracker SQLite (lives on Docker volume / local data/)
 *.db
+*.db.before-restore-*
 data/backups/
+backups/
 
 # Flask stuff:
 instance/
