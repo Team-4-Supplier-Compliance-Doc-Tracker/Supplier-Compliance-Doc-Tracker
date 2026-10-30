@@ -28,6 +28,7 @@ class RejectedRecord:
     index: int              # position in the JSON list, 0-based
     raw_id: str             # document_id or part_number if present, else ""
     reason: str
+    supplier_id: str = ""   # supplier_id if present, else ""; ties a rejection to that supplier's flags
 
 
 class InputFileError(Exception):

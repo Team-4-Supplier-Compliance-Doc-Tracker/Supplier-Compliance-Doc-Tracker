@@ -72,3 +72,11 @@ def test_supplier_known_only_via_part_gets_missing_flags(sample_docs, sample_par
     flags, _ = run_rules(sample_docs, sample_parts, settings, today)
     sup_106 = {(flag.flag_type, flag.document_type) for flag in flags if flag.supplier_id == "SUP-106"}
     assert sup_106 == {("missing", "quality_cert"), ("missing", "env_declaration")}
+
+
+def test_renewal_clears_at_risk(sample_docs, sample_parts, settings, today):
+    # DOC-005 expired, but SUP-102 has renewed it; the old cert stays on file for audit.
+    renewal = SupplierDocument("DOC-005-R1", "SUP-102", "safety_cert", date(2026, 6, 1), date(2027, 6, 1))
+    flags, at_risk = run_rules(sample_docs + [renewal], sample_parts, settings, today)
+    assert "DOC-005" not in {flag.document_id for flag in flags}
+    assert "PRT-5002" not in at_risk_by_part(at_risk)

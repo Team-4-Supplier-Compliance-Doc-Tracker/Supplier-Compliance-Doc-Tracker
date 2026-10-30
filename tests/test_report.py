@@ -72,10 +72,10 @@ def test_report_lists_at_risk_parts():
     report = render_report([_missing()], at_risk, [])
     assert "Parts at risk" in report
     lines = _lines(report)
-    assert "PRT-5003  missing safety_cert" in lines
-    assert "PRT-5005  missing quality_cert; missing env_declaration" in lines
-    assert lines.index("PRT-5003  missing safety_cert") < lines.index(
-        "PRT-5005  missing quality_cert; missing env_declaration"
+    assert "PRT-5003  SUP-103  missing safety_cert" in lines
+    assert "PRT-5005  SUP-106  missing quality_cert; missing env_declaration" in lines
+    assert lines.index("PRT-5003  SUP-103  missing safety_cert") < lines.index(
+        "PRT-5005  SUP-106  missing quality_cert; missing env_declaration"
     )
 
 

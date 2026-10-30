@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import date, timedelta
 
 from compliance.models import Part, SupplierDocument
 from compliance.rules import ExpiredRule, ExpiringSoonRule, MissingDocumentRule, PendingDocumentRule
@@ -59,7 +59,7 @@ def test_expiring_soon_excludes_beyond_window(sample_parts, settings, today):
     window = settings.expiring_soon_days
     documents = [
         doc("DOC-LAST-DAY", "env_declaration", today + timedelta(days=window)),
-        doc("DOC-TOO-LATE", "env_declaration", today + timedelta(days=window + 1)),
+        doc("DOC-TOO-LATE", "env_declaration", today + timedelta(days=window + 1), supplier_id="SUP-901"),
     ]
     flags = ExpiringSoonRule().evaluate(documents, sample_parts, settings, today)
     assert flagged_ids(flags) == {"DOC-LAST-DAY"}
@@ -116,6 +116,36 @@ def test_pending_rule_flags_pending_document(sample_docs, sample_parts, settings
     assert flags[0].supplier_id == "SUP-105"
     assert flags[0].document_type == "safety_cert"
     assert flags[0].expiry_date.isoformat() == "2027-09-01"
+
+
+# Renewals: the old document stays on file for audit, only the newest one per supplier and type is judged
+
+def renewal(document_id, document_type, issue_date, expiry_date, supplier_id="SUP-102"):
+    return SupplierDocument(document_id, supplier_id, document_type, issue_date, expiry_date)
+
+
+def test_renewal_clears_expired(sample_docs, sample_parts, settings, today):
+    documents = sample_docs + [renewal("DOC-005-R1", "safety_cert", date(2026, 6, 1), date(2027, 6, 1))]
+    assert ExpiredRule().evaluate(documents, sample_parts, settings, today) == []
+
+
+def test_renewal_clears_expiring_soon(sample_docs, sample_parts, settings, today):
+    documents = sample_docs + [renewal("DOC-006-R1", "env_declaration", date(2026, 10, 20), date(2027, 11, 20))]
+    flags = ExpiringSoonRule().evaluate(documents, sample_parts, settings, today)
+    assert flagged_ids(flags) == {"DOC-008"}
+
+
+def test_renewal_that_is_expiring_soon_is_flagged(sample_docs, sample_parts, settings, today):
+    # A short renewal replaces expired DOC-005 but itself runs out within the window.
+    documents = sample_docs + [renewal("DOC-005-R1", "safety_cert", date(2026, 6, 1), date(2026, 11, 30))]
+    assert ExpiredRule().evaluate(documents, sample_parts, settings, today) == []
+    assert "DOC-005-R1" in flagged_ids(ExpiringSoonRule().evaluate(documents, sample_parts, settings, today))
+
+
+def test_two_expired_documents_flag_only_the_newest(sample_docs, sample_parts, settings, today):
+    documents = sample_docs + [renewal("DOC-005-OLD", "safety_cert", date(2024, 6, 1), date(2025, 6, 1))]
+    flags = ExpiredRule().evaluate(documents, sample_parts, settings, today)
+    assert flagged_ids(flags) == {"DOC-005"}
 
 
 # All rules
