@@ -3,6 +3,7 @@
 from datetime import timedelta
 
 from compliance.models import Flag
+from compliance.rules.current import current_documents
 from compliance.rules_base import ComplianceRule, register
 
 
@@ -14,6 +15,6 @@ class ExpiringSoonRule(ComplianceRule):
         window_end = today + timedelta(days=settings.expiring_soon_days)
         return [
             Flag(self.name, doc.supplier_id, doc.document_type, doc.document_id, doc.expiry_date)
-            for doc in documents
+            for doc in current_documents(documents)
             if doc.expiry_date is not None and today <= doc.expiry_date <= window_end
         ]
