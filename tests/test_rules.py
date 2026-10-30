@@ -148,6 +148,14 @@ def test_two_expired_documents_flag_only_the_newest(sample_docs, sample_parts, s
     assert flagged_ids(flags) == {"DOC-005"}
 
 
+def test_pending_renewal_does_not_replace_approved_document(sample_docs, sample_parts, settings, today):
+    # 1.1.0: DOC-005-R1 is not approved yet, so expired DOC-005 is still the cert SUP-102 relies on.
+    pending_renewal = SupplierDocument("DOC-005-R1", "SUP-102", "safety_cert", date(2026, 6, 1), date(2027, 6, 1), "pending")
+    documents = sample_docs + [pending_renewal]
+    assert flagged_ids(ExpiredRule().evaluate(documents, sample_parts, settings, today)) == {"DOC-005"}
+    assert "DOC-005-R1" in flagged_ids(PendingDocumentRule().evaluate(documents, sample_parts, settings, today))
+
+
 # All rules
 
 def test_each_rule_returns_only_its_own_flag_type(sample_docs, sample_parts, settings, today):
