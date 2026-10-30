@@ -14,8 +14,9 @@ ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "src"
 GENERATE = ROOT / "scripts" / "generate_data.py"
 
-# Edge-case sample on 2026-10-26: expired + expiring_soon + missing = 7 flags (filler suppliers are clean).
-EXPECTED_FLAG_COUNT = 7
+# Edge-case sample on 2026-10-26: 1 expired + 2 expiring_soon + 5 missing + 1 pending = 9 flags (filler suppliers are clean).
+# 1.1.0 adds pending DOC-013 and, since a pending doc counts as absent, missing SUP-105 safety_cert.
+EXPECTED_FLAG_COUNT = 9
 
 
 def test_full_tool_on_synthetic_files(tmp_path):
