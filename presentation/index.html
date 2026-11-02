@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Supplier Compliance Document Tracker — Team 4</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #1a2332;
+      --muted: #5a6678;
+      --paper: #f3efe6;
+      --panel: #fffdf8;
+      --line: #d4cbb8;
+      --accent: #0f6a5a;
+      --accent-soft: #d8efe9;
+      --warn: #9a4d1c;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: "Source Sans 3", system-ui, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(1200px 600px at 10% -10%, #e7f2ee 0%, transparent 55%),
+        radial-gradient(900px 500px at 100% 0%, #f0e6d8 0%, transparent 50%),
+        var(--paper);
+      line-height: 1.55;
+    }
+    .wrap { max-width: 52rem; margin: 0 auto; padding: 2.5rem 1.25rem 4rem; }
+    header.hero {
+      padding: 2.5rem 0 2rem;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 2rem;
+      animation: rise 0.7s ease-out both;
+    }
+    .eyebrow {
+      font-size: 0.85rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 700;
+      margin: 0 0 0.75rem;
+    }
+    h1 {
+      font-family: Fraunces, Georgia, serif;
+      font-weight: 700;
+      font-size: clamp(2rem, 5vw, 3rem);
+      line-height: 1.15;
+      margin: 0 0 0.75rem;
+    }
+    .team { color: var(--muted); margin: 0; font-size: 1.05rem; }
+    .team strong { color: var(--ink); font-weight: 600; }
+    section {
+      padding: 2rem 0;
+      border-bottom: 1px solid var(--line);
+      animation: rise 0.7s ease-out both;
+    }
+    section:nth-of-type(1) { animation-delay: 0.05s; }
+    section:nth-of-type(2) { animation-delay: 0.1s; }
+    section:nth-of-type(3) { animation-delay: 0.15s; }
+    section:nth-of-type(4) { animation-delay: 0.2s; }
+    h2 {
+      font-family: Fraunces, Georgia, serif;
+      font-size: 1.65rem;
+      margin: 0 0 0.35rem;
+    }
+    .byline { color: var(--muted); font-size: 0.95rem; margin: 0 0 1.25rem; }
+    h3 {
+      font-size: 1.05rem;
+      margin: 1.25rem 0 0.4rem;
+      color: var(--accent);
+    }
+    p { margin: 0 0 0.85rem; }
+    ul { margin: 0 0 1rem; padding-left: 1.2rem; }
+    li { margin-bottom: 0.35rem; }
+    .slot {
+      background: var(--panel);
+      border: 1px dashed var(--line);
+      border-radius: 8px;
+      padding: 1.25rem 1.35rem;
+      color: var(--muted);
+    }
+    .callout {
+      background: var(--accent-soft);
+      border-left: 4px solid var(--accent);
+      padding: 0.9rem 1rem;
+      margin: 1rem 0;
+      border-radius: 0 8px 8px 0;
+    }
+    .handoff {
+      font-style: italic;
+      color: var(--warn);
+      margin-top: 1.25rem;
+    }
+    .grid {
+      display: grid;
+      gap: 0.75rem;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 640px) {
+      .grid { grid-template-columns: 1fr 1fr; }
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 1rem 1.1rem;
+    }
+    .card strong { display: block; margin-bottom: 0.25rem; }
+    footer {
+      margin-top: 2rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero" id="title">
+      <p class="eyebrow">Week 3 · CoForge FDE · Team 4</p>
+      <h1>Supplier Compliance Document Tracker</h1>
+      <p class="team">
+        <strong>Dheepthi Reddy</strong> — intake, validation, rules ·
+        <strong>Nikita Ravi</strong> — SQLite, report, CLI ·
+        <strong>Vedanshu Daxesh Patel</strong> — Docker, release, CI, README
+      </p>
+      <p class="team" style="margin-top:0.75rem">
+        Screen share &amp; demo: Vedanshu · Releases <strong>1.0.0</strong> and <strong>1.1.0</strong>
+      </p>
+    </header>
+
+    <!-- DOCS-01: Dheepthi merges content into this section -->
+    <section id="dheepthi">
+      <h2>Intake, validation, and rules</h2>
+      <p class="byline">Dheepthi Reddy · ~3 minutes</p>
+      <div class="slot">
+        <p><strong>Placeholder for DOCS-01.</strong> Add: customer problem in plain language; one research change (quality certs don’t expire → nullable expiry); synthetic data and why each bad case exists; a rejected record; rules output; why inheritance made the 1.1.0 rule a one-file change.</p>
+        <p class="handoff">Handoff (draft): Now that the flags and the at-risk parts are computed, Nikita shows where they live permanently and how the manager reads the report.</p>
+      </div>
+    </section>
+
+    <!-- DOCS-02: Nikita merges content into this section -->
+    <section id="nikita">
+      <h2>Storage, report, and CLI</h2>
+      <p class="byline">Nikita Ravi · ~3 minutes</p>
+      <div class="slot">
+        <p><strong>Placeholder for DOCS-02.</strong> Add: how documents are tracked today and where it goes wrong; where flags live; DB before/after a check; why a failed save rolls back; report from the manager’s view.</p>
+        <p class="handoff">Handoff (draft): The tool works on a laptop. Vedanshu shows how it runs anywhere, keeps history across releases, and rolls back safely.</p>
+      </div>
+    </section>
+
+    <section id="vedanshu">
+      <h2>Container, releases, and audit history</h2>
+      <p class="byline">Vedanshu Daxesh Patel · ~3 minutes</p>
+
+      <h3>What research changed</h3>
+      <p>
+        ISO 9001 §8.4 treats supplier documents as records of externally provided products.
+        Auditors ask what you knew on a date, and how far back you can show it.
+        The customer asked for <strong>10-year</strong> retention (Q12). That changed three design choices:
+        the database sits on a <strong>Docker volume</strong> (not in the image), we <strong>never prune</strong> history,
+        and every backup runs <code>Connection.backup</code> plus <code>PRAGMA integrity_check</code>.
+      </p>
+      <div class="callout">
+        Image is replaceable. History must outlive <code>docker rm</code> and a version rollback.
+      </div>
+
+      <h3>Container and volume</h3>
+      <div class="grid">
+        <div class="card">
+          <strong>Image</strong>
+          <code>compliance-tracker:1.0.0</code> / <code>:1.1.0</code><br />
+          Entrypoint <code>python -m compliance</code><br />
+          <code>COMPLIANCE_DB_PATH=/data/compliance.db</code>
+        </div>
+        <div class="card">
+          <strong>Volume</strong>
+          Named volume at <code>/data</code><br />
+          Same volume across upgrade and rollback<br />
+          Host folder for backups (not only the volume)
+        </div>
+      </div>
+
+      <h3>Two releases</h3>
+      <ul>
+        <li><strong>1.0.0</strong> — expired, expiring soon, missing; per-part at-risk; <code>status</code> stored unused.</li>
+        <li><strong>1.1.0</strong> — <code>PendingDocumentRule</code> (customer Q6: pending / approved / missing view).</li>
+        <li><strong>Rollback</strong> — run the previous image on the same volume; <code>history</code> still shows every check (including <code>pending</code> from 1.1.0). A new 1.0.0 <code>run</code> only prints fresh flags.</li>
+      </ul>
+
+      <h3>Integration test — covers / does not cover</h3>
+      <div class="grid">
+        <div class="card">
+          <strong>Covers</strong>
+          Generator → CLI on synthetic files; report has expired / expiring-soon / missing; PRT-5002, 5003, 5005 at risk (not 5004); one check and expected flag count in SQLite.
+        </div>
+        <div class="card">
+          <strong>Does not cover</strong>
+          Email/PDF extraction, notifications, approving suppliers, or proving Docker on CI. Backup integrity and rollback are separate scripts / demo steps.
+        </div>
+      </div>
+
+      <p class="handoff">
+        Handoff: You’ve heard why the history has to survive the container. Next we run the live demo — check on the volume, upgrade to 1.1.0, then roll back to 1.0.0 with the checks still there.
+      </p>
+    </section>
+
+    <section id="demo">
+      <h2>Live demo</h2>
+      <p class="byline">Driven by Vedanshu · narrated by each owner for their step · ~5 minutes</p>
+      <ul>
+        <li><code>docker run … compliance-tracker:1.0.0 run …</code> — report + check 1</li>
+        <li><code>…:1.1.0 run …</code> — pending under Other; check 2</li>
+        <li><code>…:1.0.0 history SUP-105</code> — both checks, including pending</li>
+        <li>Backup → <code>integrity_check: ok</code></li>
+      </ul>
+      <p>Be ready to show the repo, green CI, <code>docs/client_brief.md</code>, and the Linear board if asked.</p>
+    </section>
+
+    <footer>
+      Brief: <code>docs/client_brief.md</code> · Assumptions: <code>docs/assumptions_log.md</code> · Questions: <code>docs/customer_questions.md</code> · Release: <code>docs/release.md</code>
+    </footer>
+  </div>
+</body>
+</html>

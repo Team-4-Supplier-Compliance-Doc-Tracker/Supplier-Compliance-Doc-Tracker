@@ -224,11 +224,13 @@ supplier-compliance-tracker/
 │   ├── test_backup.py
 │   └── test_integration.py
 ├── docs/
-│   ├── plan.md                   ← full plan: edge cases, contracts, test plan, timeline
-│   ├── linear_issues.md          ← ticket definitions (source of truth for the board)
+│   ├── client_brief.md           ← one-page brief; each section named by author
+│   ├── assumptions_log.md        ← judgment calls + customer answers
+│   ├── customer_questions.md     ← check-in Q&A table
 │   └── release.md                ← release, rollback, backup, restore procedure
 └── presentation/
-    └── index.html                ← Friday web page
+    └── index.html                ← Friday web page (title + three member sections + demo)
+
 ```
 
 Ownership:
