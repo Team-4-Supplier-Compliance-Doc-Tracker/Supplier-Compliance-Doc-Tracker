@@ -372,21 +372,23 @@ Check 1  as of 2026-10-26  (tool 1.0.0, run 2026-10-30T18:07:54+00:00)
 
 ### History survives `docker rm`
 
+The named volume keeps `compliance.db` after the container exits (`--rm`). Real check (2026-11-02):
+
 ```text
-$ docker volume create compliance-data
-compliance-data
-
-$ docker build -t compliance-tracker:1.0.0 .
+$ docker volume create compliance-survive
+$ docker run --rm -v compliance-survive:/data -v "$PWD/data":/input compliance-tracker:1.1.0 \
+    run --documents /input/documents.json --parts /input/parts.json \
+        --settings /input/settings.json --today 2026-10-26
+Compliance report as of 2026-10-26 (tool 1.1.0, check 1)
 ...
-Successfully tagged compliance-tracker:1.0.0
 
-$ docker run --rm -v compliance-data:/data --entrypoint sh compliance-tracker:1.0.0 \
-    -c 'printf "history-check\n" > /data/volume-check.txt && cat /data/volume-check.txt'
-history-check
-
-$ docker run --rm -v compliance-data:/data --entrypoint sh compliance-tracker:1.0.0 \
-    -c 'cat /data/volume-check.txt'
-history-check
+# Container is gone (--rm). History is still on the volume:
+$ docker run --rm -v compliance-survive:/data compliance-tracker:1.1.0 history SUP-105
+History for SUP-105
+Check 1  as of 2026-10-26  (tool 1.1.0, run 2026-11-02T14:24:05+00:00)
+  missing  env_declaration  —
+  missing  safety_cert  —
+  pending  safety_cert  2027-09-01  DOC-013
 ```
 
 ---
@@ -400,13 +402,13 @@ export PYTHONPATH=src
 pytest -q
 ```
 
-**Real output** (2026-10-30):
+**Real output** (2026-11-02):
 
 ```text
 $ pytest -q
-........................................................................ [ 65%]
-......................................                                   [100%]
-110 passed in 1.52s
+........................................................................ [ 60%]
+...............................................                          [100%]
+119 passed in 1.24s
 ```
 
 CI runs the same command on every PR and push to `main` (see below).
@@ -463,9 +465,102 @@ Full procedure: [`docs/release.md`](docs/release.md). Summary:
 1. Bump version in `src/compliance/__init__.py` and `pyproject.toml`.
 2. Update `CHANGELOG.md`.
 3. Merge to `main`, then `git tag -a vX.Y.Z` and `docker build -t compliance-tracker:X.Y.Z .`.
-4. **Rollback** = run the previous image tag against the **same** volume (`compliance-data`). History stays; 1.0.0 prints unknown flag types (e.g. `pending`) under **Other**.
+4. **Rollback** = run the previous image tag against the **same** volume. `history` still lists every check (including ones written by a newer tool). A new `run` under 1.0.0 only prints **fresh** flags (no pending rule), so it does not reprint 1.1.0’s `pending` under **Other**.
 
-Throwaway image-tag rehearsal (2026-10-30): built `compliance-tracker:rel02-rehearsal` and `compliance-tracker:1.0.0`, ran `history SUP-103` on both against `compliance-data` — same check rows. Real git tags wait for REL-03 / REL-04.
+### What R18 actually proves
+
+| After rollback to 1.0.0 | What happens |
+|---|---|
+| `history <supplier>` | Shows **every** saved check, including `pending` rows from 1.1.0 |
+| `run` again | New check with **7 flags** — no `pending`, no **Other** section (1.0.0 has no pending rule; `run` never re-prints old flags) |
+| `integrity_check` on a backup | `ok` |
+
+`render_report` can group an unknown flag type under **Other** (that is how **1.1.0’s own `run`** prints `pending`). The 1.0.0 **CLI** has no subcommand that loads saved flags into `render_report`, so the Friday demo uses `history` for the rollback proof — not a 1.0.0 `run` “Other” section.
+
+### Rollback rehearsal R18 (2026-11-02) — 1.0.0 → 1.1.0 → 1.0.0
+
+Both images local: `compliance-tracker:1.0.0` and `compliance-tracker:1.1.0`. Same volume `compliance-rel04`.
+
+```text
+$ docker run --rm --entrypoint python compliance-tracker:1.0.0 -c 'import compliance; print(compliance.__version__)'
+1.0.0
+$ docker run --rm --entrypoint python compliance-tracker:1.1.0 -c 'import compliance; print(compliance.__version__)'
+1.1.0
+
+# 1) Run 1.0.0 (no pending rule)
+$ docker run --rm -v compliance-rel04:/data -v "$PWD/data":/input compliance-tracker:1.0.0 \
+    run --documents /input/documents.json --parts /input/parts.json \
+        --settings /input/settings.json --today 2026-10-26
+Compliance report as of 2026-10-26 (tool 1.0.0, check 1)
+Checked 8 suppliers and 9 parts: 4 suppliers with no issues, 4 parts at risk, 7 flags, 8 rejected records
+...
+
+# 2) Upgrade: run 1.1.0 on the same volume (PendingDocumentRule)
+#    1.1.0's run prints pending under Other (renderer has no dedicated Pending section yet)
+$ docker run --rm -v compliance-rel04:/data -v "$PWD/data":/input compliance-tracker:1.1.0 \
+    run --documents /input/documents.json --parts /input/parts.json \
+        --settings /input/settings.json --today 2026-10-26
+Compliance report as of 2026-10-26 (tool 1.1.0, check 2)
+Checked 8 suppliers and 9 parts: 4 suppliers with no issues, 4 parts at risk, 9 flags, 8 rejected records
+...
+Other
+  SUP-105  safety_cert  2027-09-01  DOC-013  (pending)
+...
+
+# 3) Roll back to 1.0.0 — history still has every check, including 1.1.0's pending
+$ docker run --rm -v compliance-rel04:/data compliance-tracker:1.0.0 history SUP-105
+History for SUP-105
+Check 2  as of 2026-10-26  (tool 1.1.0, run 2026-11-02T14:04:23+00:00)
+  missing  env_declaration  —
+  missing  safety_cert  —
+  pending  safety_cert  2027-09-01  DOC-013
+Check 1  as of 2026-10-26  (tool 1.0.0, run 2026-11-02T14:04:23+00:00)
+  missing  env_declaration  —
+
+# 4) A new 1.0.0 run only evaluates fresh flags (7 flags, no pending / Other)
+$ docker run --rm -v compliance-rel04:/data -v "$PWD/data":/input compliance-tracker:1.0.0 \
+    run --documents /input/documents.json --parts /input/parts.json \
+        --settings /input/settings.json --today 2026-10-26
+Compliance report as of 2026-10-26 (tool 1.0.0, check 3)
+Checked 8 suppliers and 9 parts: 4 suppliers with no issues, 4 parts at risk, 7 flags, 8 rejected records
+...
+
+# Backup integrity_check
+$ docker run --rm -v compliance-rel04:/data -v "$PWD/backups":/backups \
+    --entrypoint python compliance-tracker:1.1.0 \
+    /app/scripts/backup.py --db /data/compliance.db --out-dir /backups
+Backup written to /backups/compliance-20261102T140424Z.db
+integrity_check: ok
+Retention: keep backups for 10 years (customer Q12); this script does not prune.
+```
+
+Optional **renderer check** (not a CLI subcommand — shows that `render_report` would put `pending` under Other if given saved flags):
+
+```bash
+docker run --rm -v compliance-rel04:/data --entrypoint python compliance-tracker:1.0.0 -c '
+import sqlite3
+from datetime import date
+from compliance.models import Flag
+from compliance.report import render_report
+conn = sqlite3.connect("/data/compliance.db")
+conn.row_factory = sqlite3.Row
+# Use check 2 (the 1.1.0 check that stored pending), not the latest 1.0.0 re-run
+rows = conn.execute("SELECT * FROM flags WHERE check_id = 2").fetchall()
+flags = [
+    Flag(r["flag_type"], r["supplier_id"], r["document_type"], r["document_id"],
+         date.fromisoformat(r["expiry_date"]) if r["expiry_date"] else None)
+    for r in rows
+]
+print(render_report(flags, [], []))
+'
+```
+
+```text
+Other
+  SUP-105  safety_cert  2027-09-01  DOC-013  (pending)
+```
+
+Git tag `v1.1.0` is created on `main` after this REL-04 PR merges (same flow as `v1.0.0`).
 
 ---
 
