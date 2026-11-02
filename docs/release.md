@@ -47,18 +47,20 @@ docker run --rm \
 
 ## Rollback
 
-Rollback means **run the previous image tag against the same volume**. The database schema is additive; older images can still read history written by newer ones (unknown flag types print under **Other** in the report).
+Rollback means **run the previous image tag against the same volume**. The database schema is additive; older images can still read every saved check via `history`.
 
 ```bash
 # After using 1.1.0 for a while, roll back to 1.0.0:
-docker run --rm -v compliance-data:/data compliance-tracker:1.0.0 history SUP-103
+docker run --rm -v compliance-data:/data compliance-tracker:1.0.0 history SUP-105
 ```
 
-Confirm:
+Confirm (R18):
 
-1. `history` still lists every check (including ones created under 1.1.0).
-2. `PRAGMA integrity_check` on a backup of the volume DB returns `ok`.
-3. For the Friday demo (R18): 1.0.0’s report prints a `pending` flag under **Other**.
+1. `history` still lists every check (including 1.1.0’s `pending` rows).
+2. A new 1.0.0 `run` only prints freshly evaluated flags (7 flags; no `pending` / no **Other**) — `run` does not re-render old checks.
+3. `PRAGMA integrity_check` on a backup of the volume DB returns `ok`.
+
+Note: `render_report` can put an unknown flag type under **Other** (1.1.0’s own `run` does this for `pending`). The 1.0.0 CLI has no path that feeds saved flags into that renderer; the demo proof after rollback is `history`, not a 1.0.0 **Other** section.
 
 ## Backup
 
@@ -114,7 +116,7 @@ Then comment on Linear **RULE-03** that the 1.1.0 rule may merge (see paste text
 - `CHANGELOG.md` dated **2026-11-02** for 1.1.0 (PendingDocumentRule + why: customer Q6).
 - Full suite green: **119 passed**.
 - Images local: `compliance-tracker:1.0.0` and `compliance-tracker:1.1.0`.
-- **R18 rehearsal** on volume `compliance-rel04`: run 1.0.0 → 1.1.0 → 1.0.0; `history SUP-105` shows both checks including `pending`; 1.0.0 report prints pending under **Other**; `integrity_check: ok`. Output pasted in README.
+- **R18 rehearsal** on volume `compliance-rel04`: run 1.0.0 → 1.1.0 → 1.0.0; `history SUP-105` shows every check including `pending`; a new 1.0.0 `run` returns to 7 flags with no pending; `integrity_check: ok`. Output pasted in README.
 - **You create and push the git tag** after this PR merges:
 
 ```bash

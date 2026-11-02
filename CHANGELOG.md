@@ -19,8 +19,9 @@ and this project uses [Semantic Versioning](https://semver.org/).
 - **MissingDocumentRule** (updated): a pending document counts as absent, so a supplier whose
   only safety cert is still pending also gets a `missing` flag (and that missing flag can put
   requiring parts at risk).
-- Docker image `compliance-tracker:1.1.0`. Rollback to `1.0.0` keeps history on the same volume;
-  1.0.0 prints `pending` under **Other**.
+- Docker image `compliance-tracker:1.1.0`. Rollback to `1.0.0` on the same volume keeps every
+  saved check; `history` still shows `pending` rows from 1.1.0. A new 1.0.0 `run` only prints
+  freshly evaluated flags (7 flags, no pending) — `run` does not re-render old checks.
 
 ## [1.0.0] — 2026-10-30
 
@@ -29,6 +30,9 @@ and this project uses [Semantic Versioning](https://semver.org/).
 - Rules: expired, expiring soon, missing; per-part at-risk (only when the gap is on a type that part's category requires).
 - SQLite history (`suppliers`, `parts`, `documents`, `compliance_checks`, `flags`, `at_risk_parts`) with foreign keys and transactional saves.
 - Plain-text report and CLI (`run`, `history`); `status` stored on documents but unused by rules.
+- Summary line on `run` (#11): `Checked <n> suppliers and <n> parts: …` so clean suppliers are visible in the count.
+- Rejected records keep their supplier (#12): `RejectedRecord.supplier_id` is stored when present so a rejection can be tied to that supplier’s flags; report lines still name the record id and reason.
+- Document renewals (#14): a duplicate `document_id` on save is skipped (same for `part_number`); a renewed certificate needs a new id to be stored. Rules still run on the input file.
 - CI workflow (`.github/workflows/ci.yml`) running `pytest -q` on every PR and push to `main`.
 - Dockerfile + `.dockerignore` with `COMPLIANCE_DB_PATH=/data/compliance.db` and `VOLUME /data`.
 - `scripts/backup.py` (`Connection.backup` + `PRAGMA integrity_check`) and safe `scripts/restore.py` (verify backup, side-copy live DB before overwrite).
