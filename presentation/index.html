@@ -78,10 +78,8 @@
   /* Diagrams are inline SVG, so they stay sharp and share the deck's type. */
   .diagram { display: block; width: 100%; height: auto; font-family: inherit; }
   .diagram .ln { fill: none; stroke: var(--ink); stroke-width: 1.4; }
-  .diagram .life { stroke: var(--strong); stroke-width: 1; }
   .diagram .bx { font-size: 16px; font-weight: 600; }
   .diagram .bs { font-size: 13px; }
-  .diagram .num { font-size: 12px; font-weight: 600; fill: #fff; }
   .diagram .msg { font-size: 14px; fill: var(--ink); }
   .diagram .strong { font-weight: 600; }
   .diagram .lane { font-size: 14px; font-weight: 600; fill: var(--ink); }
@@ -91,18 +89,15 @@
   .diagram .col { font-size: 12.5px; fill: var(--ink); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
 
   /* Workflow research */
-  .flow.tight { gap: 26px; }
-  .flow.tight > div { padding-top: 7px; }
-  .flow.tight > div:not(:last-child)::after { right: -21px; top: 6px; }
-  .flow.tight h2 { font-size: 18px; margin-bottom: 3px; }
-  .flow.tight p { font-size: 15px; line-height: 1.28; }
-  table.dense { font-size: 15px; line-height: 1.27; }
-  table.dense th { font-size: 13px; padding-bottom: 5px; }
-  table.dense td { padding: 7px 12px 7px 0; }
-  .panel.more { padding: 12px 16px; }
-  .panel.more h2 { font-size: 16px; margin-bottom: 6px; }
-  .panel.more p { font-size: 14px; line-height: 1.28; margin-top: 8px; color: var(--muted); }
-  .panel.more b { color: var(--ink); font-weight: 600; }
+  table.simple { font-size: 20px; line-height: 1.28; }
+  table.simple th { font-size: 15px; }
+  table.simple td { padding: 13px 22px 13px 0; }
+  table.simple td.muted { font-size: 17px; }
+  .next-up { margin-top: 20px; background: var(--subtle); border-radius: 4px; padding: 14px 20px 16px; }
+  .next-up h2 { font-size: 18px; margin-bottom: 8px; }
+  .next-items { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+  .next-items p { font-size: 16px; line-height: 1.3; color: var(--muted); }
+  .next-items b { color: var(--ink); font-weight: 600; }
 
   /* Nikita: code to output */
   .mapping { display: grid; grid-template-columns: 372px 34px 1fr; gap: 16px 8px; align-items: stretch; }
@@ -111,7 +106,6 @@
   .map-mod p { font-size: 16px; line-height: 1.32; color: var(--muted); }
   .map-arrow { font-size: 24px; color: var(--muted); align-self: center; text-align: center; }
   .map-out { font-size: 14.5px; line-height: 1.38; padding: 10px 14px; }
-  .diagram .band { stroke: #f5f5f4; }
 
   /* Controls */
   #bar { position: absolute; right: 16px; bottom: 10px; display: flex; align-items: center; gap: 4px; font-size: 13px; color: var(--muted); z-index: 3; opacity: .3; transition: opacity .15s; }
@@ -143,7 +137,7 @@
     <h1>Supplier Compliance Tracker</h1>
     <p class="lead">Know which parts are at risk from a supplier document, before an auditor asks.</p>
     <div class="team">Team 4: Dheepthi Reddy, Nikita Ravi, Vedanshu Daxesh Patel</div>
-    <div class="notes-source">Open with the promise in one sentence. The flow: the problem, what the product does, what it is worth, then each of us on our research and what we built, then a live demo, then the ask.</div>
+    <div class="notes-source">Open with the promise in one sentence. The flow: the problem, what it is worth, then each of us on our research and what we built, then a live demo, then the ask.</div>
   </section>
 
   <section class="slide" id="s2" aria-label="The problem">
@@ -157,17 +151,6 @@
     </div>
     <p class="source">Customer check-in, 2026-10-28; LeanLinking; Racklify. A common pattern from practitioner sources and the customer, not a measured statistic.</p>
     <div class="notes-source">Walk the chain left to right. The customer told us the document most often missing is the safety certificate. Be honest that this is a common pattern from practitioner sources plus the customer; we found no survey of how widespread it is.</div>
-  </section>
-
-  <section class="slide" id="s3" aria-label="The product">
-    <p class="kicker">The product</p>
-    <h1>One place shows what to chase, and which parts it affects</h1>
-    <div class="cols c2 grow" style="grid-template-columns:1.6fr 1fr;gap:24px;align-items:start">
-      <div><div class="frame" style="height:446px"><img src="screens/home.png" alt="The product home page, showing 4 parts at risk, 6 issues needing action and 2 expiring soon, with the most urgent issues listed"></div><p class="caption">Home: status and the most urgent issues</p></div>
-      <div><div class="frame" style="height:446px"><img src="screens/reminders.png" alt="The reminders panel, listing a safety certificate expired 147 days ago and other issues by urgency"></div><p class="caption">Reminders: ranked by urgency, with days counted</p></div>
-    </div>
-    <p class="source">Real product screens on synthetic data, version 1.1.0, as of 2026-10-26. The tool flags and reports. The compliance manager decides.</p>
-    <div class="notes-source">These are real screens on synthetic data. Point to: 4 parts at risk, and safety certificate expired 147 days ago. Stress that the tool never approves or blocks; the manager decides. We will show it live shortly.</div>
   </section>
 
   <section class="slide" id="s4" aria-label="Business impact">
@@ -224,55 +207,37 @@ class PendingDocumentRule(ComplianceRule):
       </div>
       <div><img class="shot" src="screens/required.png" alt="The product table showing which documents each part category requires"><p class="caption">Requirements live in settings, so the manager can change them</p></div>
     </div>
-    <div class="notes-source">Dheepthi: a bad record is broken and never saved; a flagged document is valid and saved, with a problem. A new rule is one class and the engine picks it up. Be accurate if asked: release 1.1.0 changed five source files in total, the new rule plus small changes. Handoff: now that the flags and at-risk parts are computed, Nikita shows the workflow research, how a run flows, where the results live and how they become the report.</div>
+    <div class="notes-source">Dheepthi: a bad record is broken and never saved; a flagged document is valid and saved, with a problem. A new rule is one class and the engine picks it up. Be accurate if asked: release 1.1.0 changed five source files in total, the new rule plus small changes. Handoff: now that the flags and at-risk parts are computed, Nikita shows the workflow research, how the data flows, where the results live and how they become the report.</div>
   </section>
 
   <section class="slide" id="s-nikita-research" aria-label="Nikita research">
     <p class="kicker">Nikita Ravi: workflow research</p>
-    <h1 style="font-size:34px;margin-bottom:18px">Today an expiry date just sits in a cell. We adapted what real systems do, and fit it to this customer</h1>
-    <div class="flow f5 tight" style="margin-bottom:16px">
-      <div><h2>Collect</h2><p>Certificates arrive by email and sit in shared folders</p></div>
-      <div><h2>Review</h2><p>A certificate can be filed without anyone reviewing it</p></div>
-      <div><h2>Track</h2><p>The expiry is a spreadsheet cell, and when it passes, nothing happens</p></div>
-      <div><h2>Renew</h2><p>Suppliers rarely refresh declarations unless asked</p></div>
-      <div><h2>Audit</h2><p>Which parts are affected? What did you know on date X?</p></div>
-    </div>
-    <div class="cols" style="grid-template-columns:1fr 268px;gap:26px;align-items:start">
-      <table class="dense">
-        <tr><th style="width:32%">Real practice</th><th style="width:34%">What we adapted</th><th>Why</th></tr>
-        <tr><td>SKU.io: a renewal is a new document; the old one stays</td><td><b>Judge only the newest approved</b>; keep the old on file</td><td>An old row would keep flagging a renewed supplier</td></tr>
-        <tr><td>SAP: an upload stays pending until a purchaser approves</td><td><b>A pending flag</b>; pending does not count as on file</td><td>The manager asked for pending / approved / missing (Q6)</td></tr>
-        <tr><td>Real systems set requirements by category or supplier</td><td><b>Risk worked out per part</b></td><td>Only parts whose category needs it are at risk (Q5)</td></tr>
-        <tr><td>SAP warns at 30 days; SKU.io alerts from 90</td><td><b>45 days, in settings</b></td><td>The vendors differ, so we asked the customer (Q4)</td></tr>
-        <tr><td>ISO 9001 wants retained evidence but sets no period</td><td><b>Every check saved with its date</b>, never pruned</td><td>The customer needs 10 years (Q12), and a spreadsheet gets overwritten</td></tr>
-      </table>
-      <div class="panel more">
-        <h2>What more we could do</h2>
-        <p><b>Link documents to parts.</b> UL lists products; declarations match a part number and revision</p>
-        <p><b>Schedule the runs.</b> The weekly check is started by hand today</p>
-        <p><b>Keep more on each document.</b> Issuer, reference number, who reviewed it</p>
-        <p><b>Refresh by risk.</b> One vendor suggests 6 months for high-risk suppliers</p>
+    <h1 style="margin-bottom:20px">An expiry date in a spreadsheet can't warn anyone</h1>
+    <table class="simple">
+      <tr><th style="width:33%">Where today's workflow breaks</th><th style="width:27%">What we adapted</th><th>Why</th></tr>
+      <tr><td>Nothing happens when the date in the cell passes</td><td><b>Flags, with 45 days' warning</b></td><td class="muted">SAP warns at 30, SKU.io from 90, so we asked the customer (Q4)</td></tr>
+      <tr><td>Nobody can say which parts are affected</td><td><b>Risk worked out per part</b></td><td class="muted">Only parts whose category needs the document are at risk (Q5)</td></tr>
+      <tr><td>A renewal sits beside the old certificate</td><td><b>Judge only the newest approved</b></td><td class="muted">SKU.io keeps both, and an old row could keep flagging</td></tr>
+      <tr><td>A spreadsheet gets overwritten</td><td><b>Every check saved with its date</b></td><td class="muted">Auditors ask what you knew on a date; the customer needs 10 years (Q12)</td></tr>
+    </table>
+    <div class="next-up">
+      <h2>What more we could do</h2>
+      <div class="next-items">
+        <p><b>Link documents to parts,</b> as UL and material declarations do</p>
+        <p><b>Schedule the runs,</b> which a person starts by hand today</p>
+        <p><b>Record who reviewed</b> each document, and its issuer</p>
       </div>
     </div>
-    <p class="source">A common pattern from practitioner and vendor sources plus the customer, not a measured statistic. LeanLinking; GreenSoft; Standards Navigator; SKU.io; SAP; ISO 9001; Quality Systems; UL; Best PCB. Full sources: docs/client_brief.md.</p>
-    <div class="notes-source">Nikita: I researched real workflows before our first customer call, so we knew which assumptions had no source and what to ask. Top row: the workflow, and where it breaks at each stage. Table: what real systems do, what we took, and why. Stress the order: research raised the question, the customer's answer decided it. Renewals is a team decision (Q11), not a customer answer. Our pending rule is stricter than SAP's: a pending document counts as missing and can put a part at risk. What the research got wrong: I expected quality certificates to expire, and the customer said they do not in their records (Q2). "What did you know on date X?" is my own conclusion, not a quote. Shipment paperwork is out of scope (Q9). Tracking is one stage: we do not qualify or suspend suppliers.</div>
-  </section>
-
-  <section class="slide" id="s-nikita-sequence" aria-label="Nikita sequence diagram">
-    <p class="kicker">Nikita Ravi: one run, in the order the code runs it</p>
-    <h1 style="margin-bottom:14px">Check first, save completely, then report</h1>
-    <svg class="diagram" viewBox="0 0 1152 446" role="img" aria-label="Sequence diagram of one compliance run. The manager starts cli.py, which loads and validates the files, saves documents and parts, runs the rules, saves the check in one transaction, renders the report, and prints it."><defs><marker id="seq-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#18181b"/></marker></defs><rect x="0" y="265" width="1152" height="32" fill="#f5f5f4"/><line x1="80" y1="52" x2="80" y2="446" class="life"/><rect x="0" y="2" width="160" height="50" rx="4" fill="#ffffff" stroke="#a1a1aa"/><text x="80" y="23" text-anchor="middle" class="bx" fill="#18181b">Compliance</text><text x="80" y="42" text-anchor="middle" class="bs" fill="#18181b">manager</text><line x1="272" y1="52" x2="272" y2="446" class="life"/><rect x="192" y="2" width="160" height="50" rx="4" fill="#18181b" stroke="#18181b"/><text x="272" y="23" text-anchor="middle" class="bx" fill="#ffffff">cli.py</text><text x="272" y="42" text-anchor="middle" class="bs" fill="#d4d4d8">Nikita</text><line x1="482" y1="52" x2="482" y2="446" class="life"/><rect x="402" y="2" width="160" height="50" rx="4" fill="#f5f5f4" stroke="#a1a1aa"/><text x="482" y="23" text-anchor="middle" class="bx" fill="#18181b">loader.py</text><text x="482" y="42" text-anchor="middle" class="bs" fill="#63636b">settings.py (Dheepthi)</text><line x1="682" y1="52" x2="682" y2="446" class="life"/><rect x="602" y="2" width="160" height="50" rx="4" fill="#f5f5f4" stroke="#a1a1aa"/><text x="682" y="23" text-anchor="middle" class="bx" fill="#18181b">engine.py</text><text x="682" y="42" text-anchor="middle" class="bs" fill="#63636b">rules (Dheepthi)</text><line x1="878" y1="52" x2="878" y2="446" class="life"/><rect x="798" y="2" width="160" height="50" rx="4" fill="#18181b" stroke="#18181b"/><text x="878" y="23" text-anchor="middle" class="bx" fill="#ffffff">storage.py</text><text x="878" y="42" text-anchor="middle" class="bs" fill="#d4d4d8">SQLite file (Nikita)</text><line x1="1072" y1="52" x2="1072" y2="446" class="life"/><rect x="992" y="2" width="160" height="50" rx="4" fill="#18181b" stroke="#18181b"/><text x="1072" y="23" text-anchor="middle" class="bx" fill="#ffffff">report.py</text><text x="1072" y="42" text-anchor="middle" class="bs" fill="#d4d4d8">Nikita</text><path d="M94 92 L270 92" class="ln" marker-end="url(#seq-arrow)"/><circle cx="80" cy="92" r="11" fill="#18181b"/><text x="80" y="96" text-anchor="middle" class="num">1</text><text x="97" y="85" text-anchor="start" class="msg halo">compliance run</text><path d="M286 124 L480 124" class="ln" marker-end="url(#seq-arrow)"/><circle cx="272" cy="124" r="11" fill="#18181b"/><text x="272" y="128" text-anchor="middle" class="num">2</text><text x="289" y="117" text-anchor="start" class="msg halo">load_settings, load_documents, load_parts</text><path d="M468 156 L274 156" class="ln" stroke-dasharray="5 4" marker-end="url(#seq-arrow)"/><circle cx="482" cy="156" r="11" fill="#18181b"/><text x="482" y="160" text-anchor="middle" class="num">3</text><text x="465" y="149" text-anchor="end" class="msg halo">good + rejected records</text><path d="M286 188 L876 188" class="ln" marker-end="url(#seq-arrow)"/><circle cx="272" cy="188" r="11" fill="#18181b"/><text x="272" y="192" text-anchor="middle" class="num">4</text><text x="289" y="181" text-anchor="start" class="msg halo">save_documents, save_parts (repeat IDs skipped)</text><path d="M286 220 L680 220" class="ln" marker-end="url(#seq-arrow)"/><circle cx="272" cy="220" r="11" fill="#18181b"/><text x="272" y="224" text-anchor="middle" class="num">5</text><text x="289" y="213" text-anchor="start" class="msg halo">run_rules(documents, parts, settings, today)</text><path d="M668 252 L274 252" class="ln" stroke-dasharray="5 4" marker-end="url(#seq-arrow)"/><circle cx="682" cy="252" r="11" fill="#18181b"/><text x="682" y="256" text-anchor="middle" class="num">6</text><text x="665" y="245" text-anchor="end" class="msg halo">flags, at-risk parts</text><path d="M286 284 L876 284" class="ln" marker-end="url(#seq-arrow)"/><circle cx="272" cy="284" r="11" fill="#18181b"/><text x="272" y="288" text-anchor="middle" class="num">7</text><text x="289" y="277" text-anchor="start" class="msg halo band">save_check(today, version, flags, at_risk)</text><path d="M864 316 L274 316" class="ln" stroke-dasharray="5 4" marker-end="url(#seq-arrow)"/><circle cx="878" cy="316" r="11" fill="#18181b"/><text x="878" y="320" text-anchor="middle" class="num">8</text><text x="861" y="309" text-anchor="end" class="msg halo">check_id</text><path d="M286 348 L1070 348" class="ln" marker-end="url(#seq-arrow)"/><circle cx="272" cy="348" r="11" fill="#18181b"/><text x="272" y="352" text-anchor="middle" class="num">9</text><text x="289" y="341" text-anchor="start" class="msg halo">render_report(flags, at_risk, rejected)</text><path d="M1058 380 L274 380" class="ln" stroke-dasharray="5 4" marker-end="url(#seq-arrow)"/><circle cx="1072" cy="380" r="11" fill="#18181b"/><text x="1072" y="384" text-anchor="middle" class="num">10</text><text x="1055" y="373" text-anchor="end" class="msg halo">report text</text><path d="M258 412 L82 412" class="ln" stroke-dasharray="5 4" marker-end="url(#seq-arrow)"/><circle cx="272" cy="412" r="11" fill="#18181b"/><text x="272" y="416" text-anchor="middle" class="num">11</text><text x="255" y="405" text-anchor="end" class="msg halo">header, summary, report</text></svg>
-    <p class="callout" style="margin-top:10px;border-top:0;padding-top:0;font-size:18px"><b>Step 7</b> saves the check, its flags and its at-risk parts in one transaction. If any row fails, none of them is saved.</p>
-    <p class="source" style="padding-top:4px">Dark boxes are my code. Source: <code>cli.py</code> <code>_run()</code>. Proved by <code>test_failed_check_save_rolls_back</code>.</p>
-    <div class="notes-source">Nikita: walk it top to bottom. All inputs are read and validated at steps 2 and 3, before the database is opened, so a bad file exits with an error and leaves no trace. The rules work on the records in memory, not on the database. The report is rendered from those same results, and step 8's check_id goes into the report's header line. Be accurate if asked: steps 4 and 7 are separate transactions, so if step 7 fails, the documents and parts from step 4 stay saved, but there is no partial check. The browser UI calls the same run_rules, save_check and render_report. Docker is Vedanshu's part; this flow is the same inside it.</div>
+    <p class="source">A common pattern from practitioner and vendor sources plus the customer, not a measured statistic. Full sources: docs/client_brief.md.</p>
+    <div class="notes-source">Nikita: I researched real workflows before our first customer call, so we knew which assumptions had no source and what to ask. Read each row left to right: what breaks, what we took, why. Research raised the question, and the customer's answer decided it. If asked for more on the workflow: certificates arrive by email and sit in shared folders, can be filed without review (Standards Navigator), and suppliers rarely refresh declarations unless asked (GreenSoft). Renewals is a team decision (Q11), not a customer answer. We also took a pending status from SAP (Q6), which Dheepthi covered; ours is stricter, because a pending document counts as missing and can put a part at risk. What the research got wrong: I expected quality certificates to expire, and the customer said they do not in their records (Q2). "What did you know on date X?" is my own conclusion, not a quote. Shipment paperwork is out of scope (Q9). Tracking is one stage: we do not qualify or suspend suppliers.</div>
   </section>
 
   <section class="slide" id="s-nikita-schema" aria-label="Nikita data schema">
     <p class="kicker">Nikita Ravi: the data, and how it flows</p>
     <h1 style="margin-bottom:12px">Reference data is stored once. Every check adds a new dated record</h1>
     <svg class="diagram" viewBox="0 -20 1152 468" role="img" aria-label="Data flow. Input files go through the loader to the engine and the report. The loader output is saved to suppliers, documents and parts. The engine output is saved to compliance_checks, flags and at_risk_parts. The history command reads flags and checks. Rejected records go to the report and are never saved."><defs><marker id="sch-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#18181b"/></marker></defs><rect x="0" y="26" width="180" height="56" rx="4" fill="#fff" stroke="#a1a1aa"/><text x="90.0" y="50" text-anchor="middle" class="bx" fill="#18181b">Input files</text><text x="90.0" y="70" text-anchor="middle" class="bs" fill="#63636b">documents, parts, settings</text><rect x="226" y="26" width="190" height="56" rx="4" fill="#fff" stroke="#a1a1aa"/><text x="321.0" y="50" text-anchor="middle" class="bx" fill="#18181b">loader.py</text><text x="321.0" y="70" text-anchor="middle" class="bs" fill="#63636b">validates every record</text><rect x="556" y="26" width="190" height="56" rx="4" fill="#fff" stroke="#a1a1aa"/><text x="651.0" y="50" text-anchor="middle" class="bx" fill="#18181b">engine.py + rules</text><text x="651.0" y="70" text-anchor="middle" class="bs" fill="#63636b">flags, at-risk parts</text><rect x="800" y="26" width="150" height="56" rx="4" fill="#18181b" stroke="#18181b"/><text x="875.0" y="50" text-anchor="middle" class="bx" fill="#fff">report.py</text><text x="875.0" y="70" text-anchor="middle" class="bs" fill="#d4d4d8">render_report</text><rect x="1004" y="26" width="148" height="56" rx="4" fill="#fff" stroke="#a1a1aa"/><text x="1078.0" y="50" text-anchor="middle" class="bx" fill="#18181b">Printed report</text><text x="1078.0" y="70" text-anchor="middle" class="bs" fill="#63636b">for the manager</text><path d="M180 54 L224 54" class="ln" marker-end="url(#sch-arrow)"/><path d="M416 54 L554 54" class="ln" marker-end="url(#sch-arrow)"/><text x="486" y="46" class="msg" text-anchor="middle">good records</text><path d="M746 54 L798 54" class="ln" marker-end="url(#sch-arrow)"/><path d="M950 54 L1002 54" class="ln" marker-end="url(#sch-arrow)"/><path d="M321 26 L321 9 L875 9 L875 24" class="ln" stroke-dasharray="5 4" marker-end="url(#sch-arrow)"/><text x="598" y="3" class="msg halo" text-anchor="middle">rejected records, each with a reason: reported, never saved</text><rect x="0" y="108" width="916" height="340" rx="6" fill="#f5f5f4" stroke="#e4e4e7"/><text x="14" y="127" class="msg strong" text-anchor="start">SQLite file: schema.sql, storage.py</text><text x="26" y="149" class="lane" text-anchor="start">Reference: stored once</text><text x="486" y="149" class="lane" text-anchor="start">History: new rows every check, never pruned</text><path d="M321 82 L321 132" class="ln" marker-end="url(#sch-arrow)"/><text x="329" y="100" class="msg" text-anchor="start">save_documents, save_parts</text><path d="M651 82 L651 132" class="ln" marker-end="url(#sch-arrow)"/><text x="659" y="100" class="msg" text-anchor="start">save_check: one transaction</text><rect x="26" y="156" width="212" height="142" rx="4" fill="#fff" stroke="#18181b"/><rect x="26" y="156" width="212" height="26" rx="4" fill="#18181b"/><text x="36" y="174" class="tb">documents</text><text x="36" y="200" class="key">PK</text><text x="62" y="200" class="col">document_id</text><text x="36" y="216" class="key">FK</text><text x="62" y="216" class="col">supplier_id</text><text x="62" y="232" class="col">document_type</text><text x="62" y="248" class="col">issue_date</text><text x="62" y="264" class="col">expiry_date</text><text x="62" y="280" class="col">status</text><rect x="254" y="156" width="212" height="142" rx="4" fill="#fff" stroke="#18181b"/><rect x="254" y="156" width="212" height="26" rx="4" fill="#18181b"/><text x="264" y="174" class="tb">parts</text><text x="264" y="200" class="key">PK</text><text x="290" y="200" class="col">part_number</text><text x="290" y="216" class="col">description</text><text x="290" y="232" class="col">part_category</text><text x="264" y="248" class="key">FK</text><text x="290" y="248" class="col">supplier_id</text><rect x="140" y="334" width="212" height="66" rx="4" fill="#fff" stroke="#18181b"/><rect x="140" y="334" width="212" height="26" rx="4" fill="#18181b"/><text x="150" y="352" class="tb">suppliers</text><text x="150" y="378" class="key">PK</text><text x="176" y="378" class="col">supplier_id</text><rect x="486" y="156" width="200" height="142" rx="4" fill="#fff" stroke="#18181b"/><rect x="486" y="156" width="200" height="26" rx="4" fill="#18181b"/><text x="496" y="174" class="tb">flags</text><text x="496" y="200" class="key">FK</text><text x="522" y="200" class="col">check_id</text><text x="496" y="216" class="key">FK</text><text x="522" y="216" class="col">supplier_id</text><text x="496" y="232" class="key">FK</text><text x="522" y="232" class="col">document_id</text><text x="522" y="248" class="col">flag_type</text><text x="522" y="264" class="col">document_type</text><text x="522" y="280" class="col">expiry_date</text><rect x="700" y="156" width="200" height="142" rx="4" fill="#fff" stroke="#18181b"/><rect x="700" y="156" width="200" height="26" rx="4" fill="#18181b"/><text x="710" y="174" class="tb">at_risk_parts</text><text x="710" y="200" class="key">PK</text><text x="736" y="200" class="col">check_id</text><text x="710" y="216" class="key">PK</text><text x="736" y="216" class="col">part_number</text><text x="710" y="232" class="key">FK</text><text x="736" y="232" class="col">supplier_id</text><text x="736" y="248" class="col">reasons</text><rect x="590" y="334" width="212" height="104" rx="4" fill="#fff" stroke="#18181b"/><rect x="590" y="334" width="212" height="26" rx="4" fill="#18181b"/><text x="600" y="352" class="tb">compliance_checks</text><text x="600" y="378" class="key">PK</text><text x="626" y="378" class="col">check_id</text><text x="626" y="394" class="col">run_at</text><text x="626" y="410" class="col">as_of_date</text><text x="626" y="426" class="col">tool_version</text><path d="M132 298 L205 332" class="ln" marker-end="url(#sch-arrow)"/><path d="M360 298 L287 332" class="ln" marker-end="url(#sch-arrow)"/><path d="M600 298 L655 332" class="ln" marker-end="url(#sch-arrow)"/><path d="M800 298 L745 332" class="ln" marker-end="url(#sch-arrow)"/><path d="M510 298 L510 374 L354 374" class="ln" marker-end="url(#sch-arrow)"/><text x="446" y="395" class="bs" text-anchor="middle" fill="#63636b">every flag and at-risk part</text><text x="446" y="411" class="bs" text-anchor="middle" fill="#63636b">links back to its supplier</text><rect x="946" y="190" width="206" height="56" rx="4" fill="#18181b" stroke="#18181b"/><text x="1049.0" y="214" text-anchor="middle" class="bx" fill="#fff">compliance history</text><text x="1049.0" y="234" text-anchor="middle" class="bs" fill="#d4d4d8">cli.py + supplier_history</text><rect x="946" y="300" width="206" height="56" rx="4" fill="#fff" stroke="#a1a1aa"/><text x="1049.0" y="324" text-anchor="middle" class="bx" fill="#18181b">What we knew</text><text x="1049.0" y="344" text-anchor="middle" class="bs" fill="#63636b">on each date, per supplier</text><path d="M916 218 L944 218" class="ln" marker-end="url(#sch-arrow)"/><path d="M1049 246 L1049 298" class="ln" marker-end="url(#sch-arrow)"/><text x="1057" y="277" class="msg" text-anchor="start">printed</text></svg>
-    <p class="source" style="font-size:15px;color:var(--ink);padding-top:8px">Run the sample twice: <b>documents stay at 19</b>, <b>flags go from 9 to 18</b>, at-risk parts from 4 to 8. Each flag keeps its own copy of the expiry date.</p>
-    <div class="notes-source">Nikita: read the top row first, the flow. The loader passes good records on, and rejected records go straight to the report and are never stored, so history SUP-104 says there is no saved record. Then the two groups. Left: suppliers, documents and parts. A rerun skips IDs it already has, so weekly runs are safe (Q7). Right: each check adds a row to compliance_checks, plus its flags and at-risk parts. Each flag keeps its own copy of the expiry date, so old results never change. Arrows between tables are foreign keys, and connect() turns foreign key checks on. A missing document has a flag with an empty document_id, because there is no document to point to. A renewal is a new document_id, and the old row stays. Known limit: documents belong to a supplier, not a part.</div>
+    <p class="source" style="font-size:15px;color:var(--ink);padding-top:8px">Run the sample twice: <b>documents stay at 19</b>, <b>flags go from 9 to 18</b>, at-risk parts from 4 to 8. Each flag keeps its own copy of the expiry date. Proved by <code>test_failed_check_save_rolls_back</code>: a check saves whole or not at all.</p>
+    <div class="notes-source">Nikita: read the top row first, the flow. The loader passes good records on, and rejected records go straight to the report and are never stored, so history SUP-104 says there is no saved record. Then the two groups. Left: suppliers, documents and parts. A rerun skips IDs it already has, so weekly runs are safe (Q7). Right: each check adds a row to compliance_checks, plus its flags and at-risk parts. Each flag keeps its own copy of the expiry date, so old results never change. Arrows between tables are foreign keys, and connect() turns foreign key checks on. A missing document has a flag with an empty document_id, because there is no document to point to. A renewal is a new document_id, and the old row stays. All inputs are validated before the database is opened, so a bad file exits with an error and leaves no trace. The rules work on records in memory, not on the database, and the report is built from those same results. Be accurate if asked: documents and parts are saved in separate transactions from the check, so if save_check fails they stay saved, but there is no partial check. The browser UI calls the same run_rules, save_check and render_report. Docker is Vedanshu's part. Known limit: documents belong to a supplier, not a part.</div>
   </section>
 
   <section class="slide" id="s-nikita-part" aria-label="Nikita's part and the output">
@@ -303,32 +268,7 @@ Check 2  as of 2026-10-26  (tool 1.1.0, run ...)
 Check 1  as of 2026-10-26  (tool 1.1.0, run ...)</pre>
     </div>
     <p class="source">Real output on the sample data, version 1.1.0; lines wrapped and abridged. 57 of the 183 tests cover these three modules. I also built the browser UI (<code>web.py</code>, 64 tests), not yet merged, which uses the same functions.</p>
-    <div class="notes-source">Nikita: read each row left to right: my code, then the line of output it produces. The report is plain text, it never decides anything, and it has no database access: it takes flags, at-risk parts and rejected records as arguments. The report answers "what needs action today?". History answers "what did we know on that date?". Each flag in history keeps the expiry date as it was then. Tests: storage 32, report 11, cli 14. Limits I would name: reports show supplier IDs, not names, and there are no days-overdue figures in the plain report.</div>
-  </section>
-
-  <section class="slide" id="s-nikita-automation" aria-label="Nikita automation and time">
-    <p class="kicker">Nikita Ravi: automation and time</p>
-    <h1>Hours of checking by hand, or a fraction of a second</h1>
-    <div class="cols c2" style="gap:48px;align-items:start">
-      <div class="panel">
-        <h2>Checking by hand today</h2>
-        <p class="small muted">Your numbers: we have no baseline yet</p>
-        <label for="calc-suppliers">Suppliers</label>
-        <select id="calc-suppliers"><option value="25">25</option><option value="50" selected>50</option><option value="100">100</option><option value="250">250</option></select>
-        <label for="calc-minutes">Minutes per supplier, each weekly check</label>
-        <select id="calc-minutes"><option value="2">2</option><option value="5" selected>5</option><option value="10">10</option><option value="15">15</option></select>
-        <output id="calc-result" for="calc-suppliers calc-minutes"></output>
-        <p class="small muted">a year, finding what needs attention</p>
-      </div>
-      <div>
-        <h2>With the tracker</h2>
-        <p class="small muted">Measured: 1,000 suppliers, each weekly run</p>
-        <div class="big" style="margin:18px 0 10px">0.06 <small>s</small></div>
-        <p class="small muted">People still chase suppliers and make the decisions. Automation removes the searching, not the judgement.</p>
-      </div>
-    </div>
-    <p class="source">Hours = suppliers &times; minutes &times; 52 weeks. Illustrative until measured in a pilot, and not a savings claim. Weekly cadence from the customer (Q7); a person starts each run.</p>
-    <div class="notes-source">Ask Adam for his own numbers and change the dropdowns live. The left side is an estimate of today's effort. The right side is measured. Do not call the difference guaranteed savings: people still review the flags and chase suppliers. That is why we propose a pilot at the end. Be accurate if asked: the check and the report are automated, the schedule is not; someone starts the run each week. Handoff: the tool works on a laptop. Vedanshu shows how it runs anywhere, keeps history across releases, and what it costs the business to run and change.</div>
+    <div class="notes-source">Nikita: read each row left to right: my code, then the line of output it produces. The report is plain text, it never decides anything, and it has no database access: it takes flags, at-risk parts and rejected records as arguments. The report answers "what needs action today?". History answers "what did we know on that date?". Each flag in history keeps the expiry date as it was then. Tests: storage 32, report 11, cli 14. Limits I would name: reports show supplier IDs, not names, and there are no days-overdue figures in the plain report. Handoff: the tool works on a laptop. Vedanshu shows how it runs anywhere, keeps history across releases, and what it means for the business.</div>
   </section>
 
   <section class="slide" id="s10" aria-label="Vedanshu research">
@@ -363,7 +303,32 @@ Check 1  as of 2026-10-26  (tool 1.1.0, run ...)</pre>
       <div><h2>Backup</h2><p>Under 0.1 s, with an integrity check</p></div>
       <div><h2>CI</h2><p>183 tests on every pull request</p></div>
     </div>
-    <div class="notes-source">Vedanshu: one image, one volume, and the numbers prove it: 7 flags, then 9 with the pending rule, then 7 after rollback, with every check still in history. The rollback proof is history, because 1.0.0's run only prints fresh flags. Reproduced with both versions on one database file; the Docker version is Vedanshu's rehearsal in the README. Next: what this means for the business.</div>
+    <div class="notes-source">Vedanshu: one image, one volume, and the numbers prove it: 7 flags, then 9 with the pending rule, then 7 after rollback, with every check still in history. The rollback proof is history, because 1.0.0's run only prints fresh flags. Reproduced with both versions on one database file; the Docker version is Vedanshu's rehearsal in the README. Next: what this saves in people's time.</div>
+  </section>
+
+  <section class="slide" id="s-vedanshu-automation" aria-label="Vedanshu automation and time">
+    <p class="kicker">Vedanshu Daxesh Patel: automation and time</p>
+    <h1>Hours of checking by hand, or a fraction of a second</h1>
+    <div class="cols c2" style="gap:48px;align-items:start">
+      <div class="panel">
+        <h2>Checking by hand today</h2>
+        <p class="small muted">Your numbers: we have no baseline yet</p>
+        <label for="calc-suppliers">Suppliers</label>
+        <select id="calc-suppliers"><option value="25">25</option><option value="50" selected>50</option><option value="100">100</option><option value="250">250</option></select>
+        <label for="calc-minutes">Minutes per supplier, each weekly check</label>
+        <select id="calc-minutes"><option value="2">2</option><option value="5" selected>5</option><option value="10">10</option><option value="15">15</option></select>
+        <output id="calc-result" for="calc-suppliers calc-minutes"></output>
+        <p class="small muted">a year, finding what needs attention</p>
+      </div>
+      <div>
+        <h2>With the tracker</h2>
+        <p class="small muted">Measured: 1,000 suppliers, each weekly run</p>
+        <div class="big" style="margin:18px 0 10px">0.06 <small>s</small></div>
+        <p class="small muted">People still chase suppliers and make the decisions. Automation removes the searching, not the judgement.</p>
+      </div>
+    </div>
+    <p class="source">Hours = suppliers &times; minutes &times; 52 weeks. Illustrative until measured in a pilot, and not a savings claim. Weekly cadence from the customer (Q7); a person starts each run.</p>
+    <div class="notes-source">Ask Adam for his own numbers and change the dropdowns live. The left side is an estimate of today's effort. The right side is measured. Do not call the difference guaranteed savings: people still review the flags and chase suppliers. That is why we propose a pilot at the end. Be accurate if asked: the check and the report are automated, the schedule is not; someone starts the run each week. Next: what this means for the business.</div>
   </section>
 
   <section class="slide" id="s-vedanshu-efficiency" aria-label="Vedanshu efficiency and business view">
