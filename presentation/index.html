@@ -1,328 +1,409 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Supplier Compliance Document Tracker — Team 4</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet" />
-  <style>
-    :root {
-      --ink: #1a2332;
-      --muted: #5a6678;
-      --paper: #f3efe6;
-      --panel: #fffdf8;
-      --line: #d4cbb8;
-      --accent: #0f6a5a;
-      --accent-soft: #d8efe9;
-      --warn: #9a4d1c;
-    }
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-      margin: 0;
-      font-family: "Source Sans 3", system-ui, sans-serif;
-      color: var(--ink);
-      background:
-        radial-gradient(1200px 600px at 10% -10%, #e7f2ee 0%, transparent 55%),
-        radial-gradient(900px 500px at 100% 0%, #f0e6d8 0%, transparent 50%),
-        var(--paper);
-      line-height: 1.55;
-    }
-    .wrap { max-width: 52rem; margin: 0 auto; padding: 2.5rem 1.25rem 4rem; }
-    header.hero {
-      padding: 2.5rem 0 2rem;
-      border-bottom: 1px solid var(--line);
-      margin-bottom: 2rem;
-      animation: rise 0.7s ease-out both;
-    }
-    .eyebrow {
-      font-size: 0.85rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--accent);
-      font-weight: 700;
-      margin: 0 0 0.75rem;
-    }
-    h1 {
-      font-family: Fraunces, Georgia, serif;
-      font-weight: 700;
-      font-size: clamp(2rem, 5vw, 3rem);
-      line-height: 1.15;
-      margin: 0 0 0.75rem;
-    }
-    .team { color: var(--muted); margin: 0; font-size: 1.05rem; }
-    .team strong { color: var(--ink); font-weight: 600; }
-    section {
-      padding: 2rem 0;
-      border-bottom: 1px solid var(--line);
-      animation: rise 0.7s ease-out both;
-    }
-    section:nth-of-type(1) { animation-delay: 0.05s; }
-    section:nth-of-type(2) { animation-delay: 0.1s; }
-    section:nth-of-type(3) { animation-delay: 0.15s; }
-    section:nth-of-type(4) { animation-delay: 0.2s; }
-    h2 {
-      font-family: Fraunces, Georgia, serif;
-      font-size: 1.65rem;
-      margin: 0 0 0.35rem;
-    }
-    .byline { color: var(--muted); font-size: 0.95rem; margin: 0 0 1.25rem; }
-    h3 {
-      font-size: 1.05rem;
-      margin: 1.25rem 0 0.4rem;
-      color: var(--accent);
-    }
-    p { margin: 0 0 0.85rem; }
-    ul { margin: 0 0 1rem; padding-left: 1.2rem; }
-    li { margin-bottom: 0.35rem; }
-    .slot {
-      background: var(--panel);
-      border: 1px dashed var(--line);
-      border-radius: 8px;
-      padding: 1.25rem 1.35rem;
-      color: var(--muted);
-    }
-    .callout {
-      background: var(--accent-soft);
-      border-left: 4px solid var(--accent);
-      padding: 0.9rem 1rem;
-      margin: 1rem 0;
-      border-radius: 0 8px 8px 0;
-    }
-    .handoff {
-      font-style: italic;
-      color: var(--warn);
-      margin-top: 1.25rem;
-    }
-    .grid {
-      display: grid;
-      gap: 0.75rem;
-      grid-template-columns: 1fr;
-    }
-    @media (min-width: 640px) {
-      .grid { grid-template-columns: 1fr 1fr; }
-    }
-    .card {
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 1rem 1.1rem;
-    }
-    .card strong { display: block; margin-bottom: 0.25rem; }
-    .scroll { overflow-x: auto; margin: 0 0 1rem; }
-    table { border-collapse: collapse; width: 100%; font-size: 0.95rem; background: var(--panel); }
-    th, td { border: 1px solid var(--line); padding: 0.45rem 0.6rem; text-align: left; vertical-align: top; }
-    pre {
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 0.9rem 1rem;
-      margin: 0 0 1rem;
-      overflow-x: auto;
-      font-size: 0.85rem;
-      line-height: 1.45;
-    }
-    footer {
-      margin-top: 2rem;
-      color: var(--muted);
-      font-size: 0.9rem;
-    }
-    @keyframes rise {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      * { animation: none !important; }
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Supplier Compliance Tracker: Team 4</title>
+<style>
+  :root { --ink: #18181b; --muted: #63636b; --line: #e4e4e7; --strong: #a1a1aa; --subtle: #f5f5f4; --paper: #ffffff; --alert: #b42318; --back: #27272a; }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; overflow: hidden; background: var(--back); }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; color: var(--ink); font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; }
+
+  /* The stage is always 1280x720 and is scaled to fit, so a slide can never scroll. */
+  #stage { position: absolute; left: 50%; top: 50%; width: 1280px; height: 720px; transform-origin: center; background: var(--paper); overflow: hidden; }
+  .slide { position: absolute; inset: 0; padding: 48px 64px 56px; display: none; flex-direction: column; }
+  .slide.active { display: flex; }
+  .kicker { font-size: 15px; font-weight: 500; color: var(--muted); margin: 0 0 10px; }
+  h1 { font-size: 38px; line-height: 1.14; font-weight: 600; letter-spacing: -0.02em; margin: 0 0 26px; max-width: 1120px; text-wrap: balance; }
+  h2 { font-size: 20px; font-weight: 600; margin: 0 0 6px; letter-spacing: -0.005em; }
+  p { margin: 0; }
+  .muted { color: var(--muted); }
+  .small { font-size: 16px; line-height: 1.4; }
+  .source { margin-top: auto; padding-top: 10px; font-size: 13px; color: var(--muted); }
+  code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  pre { margin: 0; font-size: 15px; line-height: 1.5; background: var(--subtle); padding: 14px 16px; border-radius: 3px; white-space: pre; overflow: hidden; }
+  .grow { flex: 1; min-height: 0; }
+
+  .cols { display: grid; gap: 40px; min-height: 0; }
+  .c2 { grid-template-columns: 1fr 1fr; }
+  table { border-collapse: collapse; width: 100%; font-size: 18px; line-height: 1.3; }
+  th { text-align: left; font-size: 14px; font-weight: 500; color: var(--muted); padding: 0 14px 8px 0; border-bottom: 1px solid var(--strong); }
+  td { padding: 13px 14px 13px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tr:last-child td { border-bottom: 0; }
+  td:last-child, th:last-child { padding-right: 0; }
+  td b { font-weight: 600; }
+  td.num, th.num { text-align: right; }
+
+  /* Real product screens */
+  .shot { display: block; width: 100%; border: 1px solid var(--line); border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,.05); background: #fff; }
+  .frame { overflow: hidden; border: 1px solid var(--line); border-radius: 4px; }
+  .frame img { display: block; width: 100%; }
+  .caption { font-size: 13px; color: var(--muted); margin-top: 6px; }
+
+  /* Title */
+  #s1 { justify-content: center; }
+  #s1 h1 { font-size: 62px; margin-bottom: 18px; }
+  #s1 .lead { font-size: 27px; line-height: 1.32; color: var(--muted); max-width: 900px; }
+  #s1 .team { position: absolute; left: 64px; right: 64px; bottom: 52px; font-size: 16px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 14px; }
+
+  .flow { display: grid; gap: 30px; }
+  .flow > div { position: relative; border-top: 2px solid var(--ink); padding-top: 12px; }
+  .flow > div:not(:last-child)::after { content: "\2192"; position: absolute; right: -24px; top: 12px; font-size: 20px; color: var(--muted); }
+  .flow h2 { margin-bottom: 4px; }
+  .flow p { font-size: 16px; line-height: 1.35; color: var(--muted); }
+  .f4 { grid-template-columns: repeat(4, 1fr); }
+  .f5 { grid-template-columns: repeat(5, 1fr); }
+  .f3 { grid-template-columns: repeat(3, 1fr); gap: 56px; }
+  .f3 > div:not(:last-child)::after { right: -36px; }
+
+  .f3-plain { display: grid; grid-template-columns: repeat(3, 1fr); gap: 56px; }
+  .f3-plain > div { border-top: 1px solid var(--line); padding-top: 12px; }
+  .f3-plain p { font-size: 16px; line-height: 1.35; color: var(--muted); }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 34px 44px; }
+  .stat { border-top: 2px solid var(--ink); padding-top: 12px; }
+  .stat .tag { font-size: 14px; font-weight: 500; color: var(--muted); }
+  .stat b { display: block; font-size: 58px; line-height: 1.08; font-weight: 600; letter-spacing: -0.03em; margin: 3px 0 5px; }
+  .stat span.text { font-size: 17px; line-height: 1.3; display: block; }
+  .big { font-size: 110px; line-height: 1; font-weight: 600; letter-spacing: -0.04em; }
+  .big small { font-size: 46px; letter-spacing: -0.02em; font-weight: 600; }
+  .alert { color: var(--alert); }
+
+  .panel { background: var(--subtle); padding: 22px 24px; border-radius: 4px; }
+  .panel label { display: block; font-size: 15px; font-weight: 500; color: var(--muted); margin-top: 12px; }
+  .panel select { display: block; width: 100%; margin-top: 4px; padding: 7px 9px; font: inherit; font-size: 17px; color: var(--ink); background: var(--paper); border: 1px solid var(--strong); border-radius: 3px; }
+  .panel output { display: block; font-size: 58px; font-weight: 600; letter-spacing: -0.03em; line-height: 1.05; margin-top: 16px; }
+  .callout { font-size: 21px; line-height: 1.3; font-weight: 500; border-top: 2px solid var(--ink); padding-top: 12px; }
+
+  #uml-missing { display: none; border: 1px dashed var(--strong); border-radius: 4px; padding: 40px; color: var(--muted); font-size: 16px; text-align: center; }
+  .uml { display: block; max-width: 100%; max-height: 438px; margin: 0 auto; }
+
+  /* Controls */
+  #bar { position: absolute; right: 16px; bottom: 10px; display: flex; align-items: center; gap: 4px; font-size: 13px; color: var(--muted); z-index: 3; opacity: .3; transition: opacity .15s; }
+  #bar:hover, #bar:focus-within { opacity: 1; }
+  #bar button { min-width: 34px; height: 28px; font: inherit; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 3px; cursor: pointer; }
+  #bar button:hover:not(:disabled) { border-color: var(--strong); }
+  #bar button:disabled { opacity: .35; cursor: default; }
+  #count { margin: 0 8px; min-width: 42px; text-align: center; }
+  #progress { position: absolute; left: 0; bottom: 0; height: 3px; background: var(--ink); z-index: 3; transition: width .15s; }
+  :focus-visible { outline: 2px solid #1d4e89; outline-offset: 1px; }
+  #notes { position: fixed; left: 0; right: 0; bottom: 0; padding: 14px 20px; background: #101012; color: #ececee; font-size: 16px; line-height: 1.45; z-index: 5; border-top: 1px solid #3f3f46; }
+  [hidden] { display: none !important; }
+  .notes-source { display: none; }
+
+  @media print {
+    @page { size: 1280px 720px; margin: 0; }
+    html, body { overflow: visible; height: auto; background: #fff; }
+    #stage { position: static; transform: none !important; width: auto; height: auto; overflow: visible; }
+    .slide { display: flex !important; position: relative; width: 1280px; height: 720px; inset: auto; break-after: page; }
+    #bar, #progress, #notes { display: none !important; }
+  }
+</style>
 </head>
 <body>
-  <div class="wrap">
-    <header class="hero" id="title">
-      <p class="eyebrow">Week 3 · CoForge FDE · Team 4</p>
-      <h1>Supplier Compliance Document Tracker</h1>
-      <p class="team">
-        <strong>Dheepthi Reddy</strong> — intake, validation, rules ·
-        <strong>Nikita Ravi</strong> — SQLite, report, CLI ·
-        <strong>Vedanshu Daxesh Patel</strong> — Docker, release, CI, README
-      </p>
-      <p class="team" style="margin-top:0.75rem">
-        Screen share &amp; demo: Vedanshu · Releases <strong>1.0.0</strong> and <strong>1.1.0</strong>
-      </p>
-    </header>
+<div id="stage" role="region" aria-label="Slides">
 
-    <!-- DOCS-01: Dheepthi merges content into this section -->
-    <section id="dheepthi">
-      <h2>Intake, validation, and rules</h2>
-      <p class="byline">Dheepthi Reddy · ~3 minutes</p>
-      <div class="slot">
-        <p><strong>Placeholder for DOCS-01.</strong> Add: customer problem in plain language; one research change (quality certs don’t expire → nullable expiry); synthetic data and why each bad case exists; a rejected record; rules output; why inheritance made the 1.1.0 rule a one-file change.</p>
-        <p class="handoff">Handoff (draft): Now that the flags and the at-risk parts are computed, Nikita shows where they live permanently and how the manager reads the report.</p>
+  <section class="slide" id="s1" aria-label="Title">
+    <p class="kicker">Week 3 team project, CoForge Associate FDE Training</p>
+    <h1>Supplier Compliance Tracker</h1>
+    <p class="lead">Know which parts are at risk from a supplier document, before an auditor asks.</p>
+    <div class="team">Team 4: Dheepthi Reddy, Nikita Ravi, Vedanshu Daxesh Patel</div>
+    <div class="notes-source">Open with the promise in one sentence. The flow: the problem, what the product does, what it is worth, then each of us on our research and what we built, then a live demo, then the ask.</div>
+  </section>
+
+  <section class="slide" id="s2" aria-label="The problem">
+    <p class="kicker">The problem</p>
+    <h1>One missed date becomes a problem nobody can see until an auditor asks</h1>
+    <div class="flow f4" style="margin-top:44px">
+      <div><h2>A certificate lapses</h2><p>Dozens of suppliers, each with documents to keep current</p></div>
+      <div><h2>Nobody is alerted</h2><p>The date sits in a spreadsheet cell or an email</p></div>
+      <div><h2>Parts keep being ordered</h2><p>Nothing links the document to the parts that need it</p></div>
+      <div><h2>An auditor asks</h2><p>The team reconstructs what it knew, and when</p></div>
+    </div>
+    <p class="source">Customer check-in, 2026-10-28; LeanLinking; Racklify. A common pattern from practitioner sources and the customer, not a measured statistic.</p>
+    <div class="notes-source">Walk the chain left to right. The customer told us the document most often missing is the safety certificate. Be honest that this is a common pattern from practitioner sources plus the customer; we found no survey of how widespread it is.</div>
+  </section>
+
+  <section class="slide" id="s3" aria-label="The product">
+    <p class="kicker">The product</p>
+    <h1>One place shows what to chase, and which parts it affects</h1>
+    <div class="cols c2 grow" style="grid-template-columns:1.6fr 1fr;gap:24px;align-items:start">
+      <div><div class="frame" style="height:446px"><img src="screens/home.png" alt="The product home page, showing 4 parts at risk, 6 issues needing action and 2 expiring soon, with the most urgent issues listed"></div><p class="caption">Home: status and the most urgent issues</p></div>
+      <div><div class="frame" style="height:446px"><img src="screens/reminders.png" alt="The reminders panel, listing a safety certificate expired 147 days ago and other issues by urgency"></div><p class="caption">Reminders: ranked by urgency, with days counted</p></div>
+    </div>
+    <p class="source">Real product screens on synthetic data, version 1.1.0, as of 2026-10-26. The tool flags and reports. The compliance manager decides.</p>
+    <div class="notes-source">These are real screens on synthetic data. Point to: 4 parts at risk, and safety certificate expired 147 days ago. Stress that the tool never approves or blocks; the manager decides. We will show it live shortly.</div>
+  </section>
+
+  <section class="slide" id="s4" aria-label="Business impact">
+    <p class="kicker">Business impact</p>
+    <h1>What the business gets</h1>
+    <div class="stats">
+      <div class="stat"><span class="tag">Time</span><b>0.06 s</b><span class="text">to check 1,000 suppliers and 4,900 records</span></div>
+      <div class="stat"><span class="tag">Risk</span><b>45 days</b><span class="text">warning before a document lapses</span></div>
+      <div class="stat"><span class="tag">Focus</span><b>5 &rarr; 4</b><span class="text">parts flagged: per-part logic removes the false alarm</span></div>
+      <div class="stat"><span class="tag">Audit</span><b>0.03 s</b><span class="text">to show a supplier's history across 520 saved checks</span></div>
+      <div class="stat"><span class="tag">Cost to run</span><b>0.46 MB</b><span class="text">for 10 years of weekly checks, with no licence or database server</span></div>
+      <div class="stat"><span class="tag">Trust</span><b>183</b><span class="text">automated tests, run on every pull request</span></div>
+    </div>
+    <p class="source">Measured on the product, 2026-11-02, on a MacBook in Python, not Docker. The 1,000-supplier set is generated test data; the others use the sample data. 45 days is the customer's setting (Q4). 183 tests include the new UI, not yet merged.</p>
+    <div class="notes-source">Each number comes from running the product. Time and audit are speed on a laptop with generated data. 5 to 4 is on the sample data: PRT-5004 is not held up, because its category does not need the missing document. Next: what this means for people's time.</div>
+  </section>
+
+  <section class="slide" id="s5" aria-label="Time saved">
+    <p class="kicker">Automation and time</p>
+    <h1>Hours of checking by hand, or a fraction of a second</h1>
+    <div class="cols c2" style="gap:48px;align-items:start">
+      <div class="panel">
+        <h2>Checking by hand today</h2>
+        <p class="small muted">Your numbers: we have no baseline yet</p>
+        <label for="calc-suppliers">Suppliers</label>
+        <select id="calc-suppliers"><option value="25">25</option><option value="50" selected>50</option><option value="100">100</option><option value="250">250</option></select>
+        <label for="calc-minutes">Minutes per supplier, each weekly check</label>
+        <select id="calc-minutes"><option value="2">2</option><option value="5" selected>5</option><option value="10">10</option><option value="15">15</option></select>
+        <output id="calc-result" for="calc-suppliers calc-minutes"></output>
+        <p class="small muted">a year, finding what needs attention</p>
       </div>
-    </section>
+      <div>
+        <h2>With the tracker</h2>
+        <p class="small muted">Measured: 1,000 suppliers, each weekly run</p>
+        <div class="big" style="margin:18px 0 10px">0.06 <small>s</small></div>
+        <p class="small muted">People still chase suppliers and make the decisions. Automation removes the searching, not the judgement.</p>
+      </div>
+    </div>
+    <p class="source">Hours = suppliers &times; minutes &times; 52 weeks. Illustrative until measured in a pilot, and not a savings claim. Weekly cadence from the customer (Q7).</p>
+    <div class="notes-source">Ask Adam for his own numbers and change the dropdowns live. The left side is an estimate of today's effort. The right side is measured. Do not call the difference guaranteed savings: people still review the flags and chase suppliers. That is why we propose a pilot at the end.</div>
+  </section>
 
-    <!-- DOCS-02: Nikita merges content into this section -->
-    <section id="nikita">
-      <h2>Storage, report, and CLI</h2>
-      <p class="byline">Nikita Ravi · ~3 minutes</p>
+  <section class="slide" id="s6" aria-label="Dheepthi research">
+    <p class="kicker">Dheepthi Reddy: research</p>
+    <h1>Knowing the users decided what the product flags</h1>
+    <div class="cols" style="grid-template-columns:1fr 1.15fr;gap:32px;align-items:start">
+      <table>
+        <tr><th style="width:52%">We learned</th><th>So the product</th></tr>
+        <tr><td><b>Quality certificates don't expire</b> in the customer's records (Q2)</td><td>Allows an empty expiry for that type only</td></tr>
+        <tr><td><b>Buyers need parts,</b> not just suppliers (Q5)</td><td>Works out risk per part</td></tr>
+        <tr><td><b>The manager wants</b> pending / approved / missing (Q6)</td><td>Adds a pending flag in 1.1.0</td></tr>
+      </table>
+      <div><img class="shot" src="screens/rejected.png" alt="The rejected records table in the product, listing each bad record with a reason"><p class="caption">In the product: every bad record is rejected with a reason</p></div>
+    </div>
+    <p class="source">Customer answers Q2, Q5, Q6. Racklify; ISO 9001. Full sources: docs/client_brief.md.</p>
+    <div class="notes-source">Dheepthi: the one research change to highlight is quality certificates: they do not expire in the customer's records, so expiry can be empty for that type only. Certification bodies describe a three-year validity, so we logged an open question. Then move to how the rules work.</div>
+  </section>
 
-      <h3>How it is done today, and where it goes wrong</h3>
-      <p>
-        Certificates arrive by email and sit in shared folders. The record is often a spreadsheet where expiry is just a cell, so
-        nothing happens when a date passes. Suppliers rarely update documents unless asked, and nobody can say which parts
-        are affected until an auditor asks.
-      </p>
+  <section class="slide" id="s7" aria-label="Dheepthi technical">
+    <p class="kicker">Dheepthi Reddy: how it works</p>
+    <h1>Bad data stops at the door, and each rule is small and separate</h1>
+    <div class="flow f5" style="margin-bottom:34px">
+      <div><h2>Input files</h2><p>Documents, parts, settings</p></div>
+      <div><h2>Loaders</h2><p>Reject bad records with a reason</p></div>
+      <div><h2>Rules</h2><p>Expired, expiring, missing, pending</p></div>
+      <div><h2>Engine</h2><p>Works out at-risk parts</p></div>
+      <div><h2>Results</h2><p>Saved, reported, shown</p></div>
+    </div>
+    <div class="cols" style="grid-template-columns:1.25fr 1fr;gap:32px;align-items:start">
+      <div>
+<pre>@register
+class PendingDocumentRule(ComplianceRule):
+    name = "pending"
 
-      <h3>What research changed</h3>
-      <p>I researched real workflows before our first customer call, so we knew which assumptions to test.</p>
-      <div class="scroll">
+    def evaluate(self, documents, parts, settings, today):
+        return [Flag(self.name, ...) for doc in documents
+                if doc.status == "pending"]</pre>
+        <p class="caption">The 1.1.0 rule is one small class (abridged)</p>
+      </div>
+      <div><img class="shot" src="screens/required.png" alt="The product table showing which documents each part category requires"><p class="caption">Requirements live in settings, so the manager can change them</p></div>
+    </div>
+    <div class="notes-source">Dheepthi: a bad record is broken and never saved; a flagged document is valid and saved, with a problem. A new rule is one class and the engine picks it up. Be accurate if asked: release 1.1.0 changed five source files in total, the new rule plus small changes. Handoff: now that the flags and at-risk parts are computed, Nikita shows where the research came from and where they live.</div>
+  </section>
+
+  <section class="slide" id="s8" aria-label="Nikita research">
+    <p class="kicker">Nikita Ravi: research</p>
+    <h1>Research before the first call told us what to ask</h1>
+    <div class="cols" style="grid-template-columns:1.25fr 1fr;gap:28px;align-items:start">
+      <table style="font-size:17px">
+        <tr><th>We assumed</th><th>We learned</th><th>So the product</th></tr>
+        <tr><td>A gap affects all of a supplier's parts</td><td><b>Only parts whose category needs it</b> (Q5)</td><td>Works out risk per part</td></tr>
+        <tr><td>History kept, no period set</td><td><b>ISO sets no period; the customer needs 10 years</b> (Q12)</td><td>Never prunes history</td></tr>
+        <tr><td>"What is expired today?"</td><td><b>The harder question is "what did you know on date X?"</b> (our conclusion)</td><td>Saves every check with its date</td></tr>
+        <tr><td>One document per supplier and type</td><td><b>Renewals sit next to the old certificate</b></td><td>Judges only the current one</td></tr>
+      </table>
+      <div><img class="shot" src="screens/risk.png" alt="Parts at risk for supplier SUP-103 in the product: only PRT-5003 is listed"><p class="caption">In the product: SUP-103 has two parts, and only PRT-5003 is at risk</p></div>
+    </div>
+    <p class="source">Customer answers Q5, Q12. SAP; SKU.io; Standards Navigator; LeanLinking; Quality Systems. Full sources: docs/client_brief.md.</p>
+    <div class="notes-source">Nikita: I researched real workflows before our first customer call, so we knew which assumptions to test. The research flagged renewals as a risk before we wrote code. It also got something wrong: I expected quality certificates to expire. Known limit: real safety and material declarations are often per part; we track per supplier, as scoped.</div>
+  </section>
+
+  <section class="slide" id="s9" aria-label="Nikita technical">
+    <p class="kicker">Nikita Ravi: how it works</p>
+    <h1 style="margin-bottom:14px">A check is saved completely or not at all</h1>
+    <div style="min-height:0">
+      <img class="uml" id="uml" src="screens/sequence-diagram.png" alt="UML sequence diagram. The compliance manager runs a check. The tool checks every record with the file checker, saves the good documents and parts to the database, asks the rules for problems and at-risk parts, saves the check and its problems together, then returns a report to the manager.">
+      <div id="uml-missing">Sequence diagram goes here: presentation/screens/sequence-diagram.png</div>
+    </div>
+    <p class="callout" style="margin-top:12px;border-top:0;padding-top:0"><b>Step 7</b> saves the check and its flags together. If any row fails, nothing is saved.</p>
+    <p class="source">Sample data, version 1.1.0: flags go from 9 to 18 across two checks, while documents stay at 19. Proved by <code>test_failed_check_save_rolls_back</code>.</p>
+    <div class="notes-source">Nikita: walk the diagram top to bottom, then stop on step 7. A second run does not duplicate documents, but history grows: flags go from 9 to 18 and at-risk parts from 4 to 8, and each flag keeps its own copy of the expiry date, so old results never change. Show the rollback test if asked. Handoff: the tool works on a laptop. Vedanshu shows how it runs anywhere, keeps history across releases, and rolls back safely.</div>
+  </section>
+
+  <section class="slide" id="s10" aria-label="Vedanshu research">
+    <p class="kicker">Vedanshu Daxesh Patel: research</p>
+    <h1>Audit rules made the history as important as the software</h1>
+    <div class="cols" style="grid-template-columns:1fr 1.15fr;gap:32px;align-items:start">
+      <div>
         <table>
-          <tr><th>We assumed</th><th>We learned</th><th>So the tool</th></tr>
-          <tr><td>A gap affects all of a supplier's parts</td><td>Only parts whose category needs the document (Q5)</td><td>Works out at risk per part</td></tr>
-          <tr><td>History kept, no period set</td><td>ISO sets no period; the customer needs 10 years (Q12)</td><td>Never prunes history</td></tr>
-          <tr><td>"What is expired today?"</td><td>The harder question is "what did you know on date X?" (our conclusion)</td><td>Saves every check with its date</td></tr>
-          <tr><td>One document per supplier and type</td><td>Renewals sit next to the old certificate</td><td>Judges only the current one (PR #14)</td></tr>
+          <tr><th style="width:52%">We learned</th><th>So the product</th></tr>
+          <tr><td><b>ISO 9001 §8.4</b> treats these as supplier records</td><td>Saves every check with its date</td></tr>
+          <tr><td><b>The customer needs 10 years</b> (Q12)</td><td>Never prunes history</td></tr>
+          <tr><td><b>Software gets replaced</b></td><td>Keeps the database on a Docker volume</td></tr>
+        </table>
+        <p class="callout" style="margin-top:20px">The image is replaceable. The history must outlive it.</p>
+      </div>
+      <div><img class="shot" src="screens/history.png" alt="The product's supplier history for SUP-103, showing check 2 and check 1, with DOC-008's expired flag marked as new"><p class="caption">In the product: what we knew on each date, with changes marked</p></div>
+    </div>
+    <p class="source">ISO 9001:2015; ASQ; customer answer Q12. ISO requires retained records but sets no period; the 10 years comes from the customer.</p>
+    <div class="notes-source">Vedanshu: one customer answer, 10 years, drove three design choices: the database sits on a Docker volume, we never prune history, and every backup runs an integrity check. Be precise that ISO sets no retention period.</div>
+  </section>
+
+  <section class="slide" id="s11" aria-label="Vedanshu technical">
+    <p class="kicker">Vedanshu Daxesh Patel: how it works</p>
+    <h1>The software changes, and the history stays</h1>
+    <div class="flow f3" style="margin-bottom:34px">
+      <div><h2>Release 1.0.0</h2><div class="big">7</div><p>flags on the sample</p></div>
+      <div><h2>Release 1.1.0</h2><div class="big">9</div><p>the pending rule, same data</p></div>
+      <div><h2>Roll back to 1.0.0</h2><div class="big">7</div><p>every check still in history</p></div>
+    </div>
+    <div class="f3-plain">
+      <div><h2>Container</h2><p>Same image anywhere; data on a volume</p></div>
+      <div><h2>Backup</h2><p>Under 0.1 s, with an integrity check</p></div>
+      <div><h2>CI</h2><p>183 tests on every pull request</p></div>
+    </div>
+    <p class="source" style="font-size:17px;color:var(--ink)"><b>Next: live demo.</b></p>
+    <div class="notes-source">Vedanshu: you drive the demo. The script is docs/demo_walkthrough.md. The rollback proof is history, because 1.0.0's run only prints fresh flags. Reproduced with both versions on one database file; the Docker version is Vedanshu's rehearsal in the README. After the demo, go to the last slide.</div>
+  </section>
+
+  <section class="slide" id="s12" aria-label="The ask">
+    <p class="kicker">Next step</p>
+    <h1>The ask: a pilot with one team's real supplier list</h1>
+    <div class="cols c2" style="gap:56px;margin-top:10px">
+      <div>
+        <h2 style="margin-bottom:12px">What the pilot would measure</h2>
+        <table>
+          <tr><td>Weekly review time</td><td class="muted">before and after</td></tr>
+          <tr><td>Lapses caught early</td><td class="muted">caught ÷ all lapses</td></tr>
+          <tr><td>False alarms</td><td class="muted">no action needed ÷ all flags</td></tr>
+          <tr><td>Time to answer an auditor</td><td class="muted">minutes</td></tr>
         </table>
       </div>
-
-      <h3>Where flags live</h3>
-      <p>
-        Every run adds one row to <code>compliance_checks</code>. Each flag points to its check and keeps its own copy of the
-        expiry date, so old results never change. At-risk parts have their own table, because one part can have several reasons.
-      </p>
-
-      <h3>The database before and after a check</h3>
-      <div class="scroll">
+      <div>
+        <h2 style="margin-bottom:12px">What it needs first</h2>
         <table>
-          <tr><th>Table</th><th>Empty</th><th>After check 1</th><th>After check 2</th></tr>
-          <tr><td><code>documents</code></td><td>0</td><td>19</td><td>19</td></tr>
-          <tr><td><code>parts</code></td><td>0</td><td>9</td><td>9</td></tr>
-          <tr><td><code>compliance_checks</code></td><td>0</td><td>1</td><td>2</td></tr>
-          <tr><td><code>flags</code></td><td>0</td><td>9</td><td>18</td></tr>
-          <tr><td><code>at_risk_parts</code></td><td>0</td><td>4</td><td>8</td></tr>
+          <tr><td>Documents linked to parts, not only suppliers</td></tr>
+          <tr><td>Real reminders: email, with supplier contacts</td></tr>
+          <tr><td>Company sign-in and HTTPS</td></tr>
         </table>
       </div>
-      <p>Same input, version 1.1.0. The inputs are not duplicated, and the history grows with every run.</p>
+    </div>
+    <div class="notes-source">Close with the ask. We have shown what the product does on synthetic data; a pilot turns the illustrative time figure into a measured one. Be plain about what a real rollout needs first. Then open for questions.</div>
+  </section>
 
-      <h3>Why a failed save rolls back</h3>
-      <p>
-        A check, its flags and its at-risk parts save in one transaction. Half a check would hide problems from an auditor.
-        <code>test_failed_check_save_rolls_back</code> adds a part that was never saved, so the last insert fails:
-      </p>
-<pre>unsaved_part = AtRiskPart("PRT-NOPE", "SUP-102", ("expired safety_cert",))
-with pytest.raises(sqlite3.IntegrityError):
-    _save_check(seeded_path, at_risk=CHECK_AT_RISK + [unsaved_part])
-assert _fetch(seeded_path, "SELECT COUNT(*) FROM compliance_checks") == [(0,)]
-assert _fetch(seeded_path, "SELECT COUNT(*) FROM flags") == [(0,)]</pre>
-      <div class="callout">The valid flags are undone too. A check is either fully saved or not saved at all.</div>
-
-      <h3>The report, from the manager's view</h3>
-<pre>Compliance report as of 2026-10-26 (tool 1.1.0, check 1)
-Checked 8 suppliers and 9 parts: 4 suppliers with no issues, 4 parts at risk, 9 flags, 8 rejected records
-
-Expired
-  SUP-102  safety_cert  2026-06-01  DOC-005
-...
-Parts at risk
-  PRT-5002  SUP-102  expired safety_cert
-  PRT-5003  SUP-103  missing safety_cert
-  PRT-5005  SUP-106  missing quality_cert; missing env_declaration
-  PRT-5006  SUP-105  missing safety_cert; missing env_declaration
-...</pre>
-      <p>
-        The first lines give the date and the scope. Then the manager sees what is wrong, which parts it affects and whom to
-        chase. For an audit, <code>history SUP-103</code> lists every saved check, newest first.
-      </p>
-
-      <h3>Test cases to watch in the demo</h3>
-      <div class="scroll">
-        <table>
-          <tr><th>Case</th><th>Expected</th></tr>
-          <tr><td>Clean supplier: <code>history SUP-101</code></td><td>No flags in any saved check</td></tr>
-          <tr><td>Expires today: DOC-008</td><td>Expiring soon, not expired</td></tr>
-          <tr><td>Same supplier, different parts: SUP-103</td><td>PRT-5003 at risk, PRT-5004 not</td></tr>
-          <tr><td>No documents at all: SUP-106</td><td>PRT-5005 at risk with two reasons</td></tr>
-          <tr><td>Run it twice</td><td>Header says check 2; flags go from 9 to 18</td></tr>
-        </table>
-      </div>
-      <p>The full list of 12 cases is in <code>docs/client_brief.md</code>.</p>
-
-      <p class="handoff">Handoff: The tool works on a laptop. Vedanshu shows how it runs anywhere, keeps history across releases, and rolls back safely.</p>
-    </section>
-
-    <section id="vedanshu">
-      <h2>Container, releases, and audit history</h2>
-      <p class="byline">Vedanshu Daxesh Patel · ~3 minutes</p>
-
-      <h3>What research changed</h3>
-      <p>
-        ISO 9001 §8.4 treats supplier documents as records of externally provided products.
-        Auditors ask what you knew on a date, and how far back you can show it.
-        The customer asked for <strong>10-year</strong> retention (Q12). That changed three design choices:
-        the database sits on a <strong>Docker volume</strong> (not in the image), we <strong>never prune</strong> history,
-        and every backup runs <code>Connection.backup</code> plus <code>PRAGMA integrity_check</code>.
-      </p>
-      <div class="callout">
-        Image is replaceable. History must outlive <code>docker rm</code> and a version rollback.
-      </div>
-
-      <h3>Container and volume</h3>
-      <div class="grid">
-        <div class="card">
-          <strong>Image</strong>
-          <code>compliance-tracker:1.0.0</code> / <code>:1.1.0</code><br />
-          Entrypoint <code>python -m compliance</code><br />
-          <code>COMPLIANCE_DB_PATH=/data/compliance.db</code>
-        </div>
-        <div class="card">
-          <strong>Volume</strong>
-          Named volume at <code>/data</code><br />
-          Same volume across upgrade and rollback<br />
-          Host folder for backups (not only the volume)
-        </div>
-      </div>
-
-      <h3>Two releases</h3>
-      <ul>
-        <li><strong>1.0.0</strong> — expired, expiring soon, missing; per-part at-risk; <code>status</code> stored unused.</li>
-        <li><strong>1.1.0</strong> — <code>PendingDocumentRule</code> (customer Q6: pending / approved / missing view).</li>
-        <li><strong>Rollback</strong> — run the previous image on the same volume; <code>history</code> still shows every check (including <code>pending</code> from 1.1.0). A new 1.0.0 <code>run</code> only prints fresh flags.</li>
-      </ul>
-
-      <h3>Integration test — covers / does not cover</h3>
-      <div class="grid">
-        <div class="card">
-          <strong>Covers</strong>
-          Generator → CLI on synthetic files; report has expired / expiring-soon / missing; PRT-5002, 5003, 5005 at risk (not 5004); one check and expected flag count in SQLite.
-        </div>
-        <div class="card">
-          <strong>Does not cover</strong>
-          Email/PDF extraction, notifications, approving suppliers, or proving Docker on CI. Backup integrity and rollback are separate scripts / demo steps.
-        </div>
-      </div>
-
-      <p class="handoff">
-        Handoff: You’ve heard why the history has to survive the container. Next we run the live demo — check on the volume, upgrade to 1.1.0, then roll back to 1.0.0 with the checks still there.
-      </p>
-    </section>
-
-    <section id="demo">
-      <h2>Live demo</h2>
-      <p class="byline">Driven by Vedanshu · narrated by each owner for their step · ~5 minutes</p>
-      <ul>
-        <li><code>docker run … compliance-tracker:1.0.0 run …</code> — report + check 1</li>
-        <li><code>…:1.1.0 run …</code> — pending under Other; check 2</li>
-        <li><code>…:1.0.0 history SUP-105</code> — both checks, including pending</li>
-        <li>Backup → <code>integrity_check: ok</code></li>
-      </ul>
-      <p>Be ready to show the repo, green CI, <code>docs/client_brief.md</code>, and the Linear board if asked.</p>
-    </section>
-
-    <footer>
-      Brief: <code>docs/client_brief.md</code> · Assumptions: <code>docs/assumptions_log.md</code> · Questions: <code>docs/customer_questions.md</code> · Release: <code>docs/release.md</code>
-    </footer>
+  <div id="progress" aria-hidden="true"></div>
+  <div id="bar">
+    <button id="prev" type="button" aria-label="Previous slide">&larr;</button>
+    <span id="count" aria-live="polite"></span>
+    <button id="next" type="button" aria-label="Next slide">&rarr;</button>
+    <button id="notes-toggle" type="button" aria-pressed="false" title="Speaker notes (N)">Notes</button>
+    <button id="full" type="button" title="Full screen (F)">Full screen</button>
   </div>
+</div>
+<div id="notes" role="note" hidden></div>
+
+<script>
+"use strict";
+const slides = [...document.querySelectorAll(".slide")];
+const stage = document.getElementById("stage");
+const notes = document.getElementById("notes");
+let index = 0;
+
+function fit() {
+  const scale = Math.min(window.innerWidth / 1280, window.innerHeight / 720);
+  stage.style.transform = "translate(-50%, -50%) scale(" + scale + ")";
+}
+
+function show(next, updateHash = true) {
+  index = Math.max(0, Math.min(slides.length - 1, next));
+  slides.forEach((slide, i) => {
+    slide.classList.toggle("active", i === index);
+    slide.setAttribute("aria-hidden", String(i !== index));
+  });
+  document.getElementById("count").textContent = (index + 1) + " / " + slides.length;
+  document.getElementById("progress").style.width = ((index + 1) / slides.length * 100) + "%";
+  document.getElementById("prev").disabled = index === 0;
+  document.getElementById("next").disabled = index === slides.length - 1;
+  notes.textContent = slides[index].querySelector(".notes-source").textContent;
+  if (updateHash) history.replaceState(null, "", "#" + (index + 1));
+}
+
+function slideFromHash() {
+  const number = parseInt(location.hash.slice(1), 10);
+  return Number.isInteger(number) ? number - 1 : 0;
+}
+
+function toggleNotes() {
+  notes.hidden = !notes.hidden;
+  document.getElementById("notes-toggle").setAttribute("aria-pressed", String(!notes.hidden));
+}
+
+function toggleFullScreen() {
+  if (document.fullscreenElement) document.exitFullscreen();
+  else if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(() => {});
+}
+
+function updateCalculator() {
+  const suppliers = Number(document.getElementById("calc-suppliers").value);
+  const minutes = Number(document.getElementById("calc-minutes").value);
+  const hours = Math.round(suppliers * minutes * 52 / 60);
+  document.getElementById("calc-result").textContent = hours.toLocaleString("en-US") + " hours";
+}
+
+document.getElementById("prev").addEventListener("click", () => show(index - 1));
+document.getElementById("next").addEventListener("click", () => show(index + 1));
+document.getElementById("notes-toggle").addEventListener("click", toggleNotes);
+document.getElementById("full").addEventListener("click", toggleFullScreen);
+document.getElementById("calc-suppliers").addEventListener("change", updateCalculator);
+document.getElementById("calc-minutes").addEventListener("change", updateCalculator);
+document.getElementById("uml").addEventListener("error", (event) => {
+  event.target.hidden = true;
+  document.getElementById("uml-missing").style.display = "block";
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.metaKey || event.ctrlKey || event.altKey) return;
+  // Arrow keys on a focused dropdown change its value, so leave them alone.
+  const onSelect = event.target.tagName === "SELECT";
+  const key = event.key;
+  if (!onSelect && (key === "ArrowRight" || key === "ArrowDown" || key === "PageDown" || key === " ")) { event.preventDefault(); show(index + 1); }
+  else if (!onSelect && (key === "ArrowLeft" || key === "ArrowUp" || key === "PageUp")) { event.preventDefault(); show(index - 1); }
+  else if (key === "Home") { event.preventDefault(); show(0); }
+  else if (key === "End") { event.preventDefault(); show(slides.length - 1); }
+  else if (key === "n" || key === "N") toggleNotes();
+  else if (key === "f" || key === "F") toggleFullScreen();
+});
+
+let touchStart = null;
+document.addEventListener("touchstart", (event) => { touchStart = event.changedTouches[0].clientX; }, { passive: true });
+document.addEventListener("touchend", (event) => {
+  if (touchStart === null) return;
+  const moved = event.changedTouches[0].clientX - touchStart;
+  touchStart = null;
+  if (Math.abs(moved) > 50) show(index + (moved < 0 ? 1 : -1));
+}, { passive: true });
+
+window.addEventListener("resize", fit);
+window.addEventListener("hashchange", () => show(slideFromHash(), false));
+fit();
+updateCalculator();
+show(slideFromHash());
+</script>
 </body>
 </html>
