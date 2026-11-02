@@ -108,6 +108,21 @@ git push origin v1.0.0
 
 Then comment on Linear **RULE-03** that the 1.1.0 rule may merge (see paste text in the REL-03 PR).
 
+## Release 1.1.0 status (REL-04, 2026-11-02)
+
+- Version **1.1.0** already set by RULE-03 in `__init__.py` / `pyproject.toml`.
+- `CHANGELOG.md` dated **2026-11-02** for 1.1.0 (PendingDocumentRule + why: customer Q6).
+- Full suite green: **119 passed**.
+- Images local: `compliance-tracker:1.0.0` and `compliance-tracker:1.1.0`.
+- **R18 rehearsal** on volume `compliance-rel04`: run 1.0.0 → 1.1.0 → 1.0.0; `history SUP-105` shows both checks including `pending`; 1.0.0 report prints pending under **Other**; `integrity_check: ok`. Output pasted in README.
+- **You create and push the git tag** after this PR merges:
+
+```bash
+git checkout main && git pull
+git tag -a v1.1.0 -m "Release 1.1.0"
+git push origin v1.1.0
+```
+
 ## Throwaway-tag rehearsal (REL-02, 2026-10-30)
 
 Image-tag rollback was rehearsed locally without touching git:

@@ -8,7 +8,19 @@ and this project uses [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Added
-- (nothing yet — 1.1.0 PendingDocumentRule lands after RULE-03 merges)
+- (none)
+
+## [1.1.0] — 2026-11-02
+
+### Added
+- **PendingDocumentRule**: a clean document with `status == "pending"` gets flag `pending`.
+  Chosen because the customer asked for a pending / approved / missing view (Q6). It is a
+  warning only and does not make a part at risk by itself.
+- **MissingDocumentRule** (updated): a pending document counts as absent, so a supplier whose
+  only safety cert is still pending also gets a `missing` flag (and that missing flag can put
+  requiring parts at risk).
+- Docker image `compliance-tracker:1.1.0`. Rollback to `1.0.0` keeps history on the same volume;
+  1.0.0 prints `pending` under **Other**.
 
 ## [1.0.0] — 2026-10-30
 
@@ -23,11 +35,6 @@ and this project uses [Semantic Versioning](https://semver.org/).
 - Integration test: generator → CLI on synthetic files.
 - Docker image `compliance-tracker:1.0.0` with history on a named volume.
 
-## [1.1.0] — TBD (REL-04)
-
-### Added
-- **PendingDocumentRule**: a clean document with `status == "pending"` gets flag `pending` (customer Q6 — pending / approved / missing view). Pending does not make a part at risk by itself; MissingDocumentRule treats pending as absent so the gap still surfaces.
-
-[Unreleased]: https://github.com/Team-4-Supplier-Compliance-Doc-Tracker/Supplier-Compliance-Doc-Tracker/compare/v1.0.0...HEAD
-[1.0.0]: https://github.com/Team-4-Supplier-Compliance-Doc-Tracker/Supplier-Compliance-Doc-Tracker/releases/tag/v1.0.0
+[Unreleased]: https://github.com/Team-4-Supplier-Compliance-Doc-Tracker/Supplier-Compliance-Doc-Tracker/compare/v1.1.0...HEAD
 [1.1.0]: https://github.com/Team-4-Supplier-Compliance-Doc-Tracker/Supplier-Compliance-Doc-Tracker/releases/tag/v1.1.0
+[1.0.0]: https://github.com/Team-4-Supplier-Compliance-Doc-Tracker/Supplier-Compliance-Doc-Tracker/releases/tag/v1.0.0

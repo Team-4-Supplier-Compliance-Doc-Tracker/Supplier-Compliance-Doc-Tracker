@@ -463,9 +463,61 @@ Full procedure: [`docs/release.md`](docs/release.md). Summary:
 1. Bump version in `src/compliance/__init__.py` and `pyproject.toml`.
 2. Update `CHANGELOG.md`.
 3. Merge to `main`, then `git tag -a vX.Y.Z` and `docker build -t compliance-tracker:X.Y.Z .`.
-4. **Rollback** = run the previous image tag against the **same** volume (`compliance-data`). History stays; 1.0.0 prints unknown flag types (e.g. `pending`) under **Other**.
+4. **Rollback** = run the previous image tag against the **same** volume. History stays; 1.0.0 prints unknown flag types (e.g. `pending`) under **Other**.
 
-Throwaway image-tag rehearsal (2026-10-30): built `compliance-tracker:rel02-rehearsal` and `compliance-tracker:1.0.0`, ran `history SUP-103` on both against `compliance-data` — same check rows. Real git tags wait for REL-03 / REL-04.
+### Rollback rehearsal R18 (2026-11-02) — 1.0.0 → 1.1.0 → 1.0.0
+
+Both images local: `compliance-tracker:1.0.0` and `compliance-tracker:1.1.0`. Same volume `compliance-rel04`.
+
+```text
+$ docker run --rm --entrypoint python compliance-tracker:1.0.0 -c 'import compliance; print(compliance.__version__)'
+1.0.0
+$ docker run --rm --entrypoint python compliance-tracker:1.1.0 -c 'import compliance; print(compliance.__version__)'
+1.1.0
+
+# 1) Run 1.0.0 (no pending rule)
+$ docker run --rm -v compliance-rel04:/data -v "$PWD/data":/input compliance-tracker:1.0.0 \
+    run --documents /input/documents.json --parts /input/parts.json \
+        --settings /input/settings.json --today 2026-10-26
+Compliance report as of 2026-10-26 (tool 1.0.0, check 1)
+Checked 8 suppliers and 9 parts: 4 suppliers with no issues, 4 parts at risk, 7 flags, 8 rejected records
+...
+
+# 2) Upgrade: run 1.1.0 on the same volume (PendingDocumentRule)
+$ docker run --rm -v compliance-rel04:/data -v "$PWD/data":/input compliance-tracker:1.1.0 \
+    run --documents /input/documents.json --parts /input/parts.json \
+        --settings /input/settings.json --today 2026-10-26
+Compliance report as of 2026-10-26 (tool 1.1.0, check 2)
+Checked 8 suppliers and 9 parts: 4 suppliers with no issues, 4 parts at risk, 9 flags, 8 rejected records
+...
+Other
+  SUP-105  safety_cert  2027-09-01  DOC-013  (pending)
+...
+
+# 3) Roll back to 1.0.0 — history still has every check, including 1.1.0's pending
+$ docker run --rm -v compliance-rel04:/data compliance-tracker:1.0.0 history SUP-105
+History for SUP-105
+Check 2  as of 2026-10-26  (tool 1.1.0, run 2026-11-02T14:04:23+00:00)
+  missing  env_declaration  —
+  missing  safety_cert  —
+  pending  safety_cert  2027-09-01  DOC-013
+Check 1  as of 2026-10-26  (tool 1.0.0, run 2026-11-02T14:04:23+00:00)
+  missing  env_declaration  —
+
+# 1.0.0's report renderer prints the saved pending flag under Other
+Other
+  SUP-105  safety_cert  2027-09-01  DOC-013  (pending)
+
+# Backup integrity_check
+$ docker run --rm -v compliance-rel04:/data -v "$PWD/backups":/backups \
+    --entrypoint python compliance-tracker:1.1.0 \
+    /app/scripts/backup.py --db /data/compliance.db --out-dir /backups
+Backup written to /backups/compliance-20261102T140424Z.db
+integrity_check: ok
+Retention: keep backups for 10 years (customer Q12); this script does not prune.
+```
+
+Git tag `v1.1.0` is created on `main` after this REL-04 PR merges (same flow as `v1.0.0`).
 
 ---
 
