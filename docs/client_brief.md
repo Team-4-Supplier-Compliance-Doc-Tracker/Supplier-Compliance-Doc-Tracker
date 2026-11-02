@@ -91,6 +91,8 @@ Expiry also works differently by document. RoHS and REACH declarations often hav
 
 **What an auditor asks.** ISO 9001 §8.4 expects retained evidence about suppliers ([ISO 9001 Checklist](https://www.iso-9001-checklist.co.uk/8.4-control-of-externally-provided-processes-products-services.htm)), but sets no retention period, so each company chooses one ([Quality Systems](https://qualitysystems.com/support/learning/records-required-by-iso-90012015/)). My own conclusion from this, not a quote from a source, is that the harder question is not "what is expired today?" but "what did you know on date X?". A spreadsheet that gets overwritten cannot answer that.
 
+**What it costs.** I found no independent figure for what a lapsed supplier document costs, and we have no customer baseline, so I describe the cost rather than price it. It shows up in four ways: staff time searching email and folders, findings when auditors "commonly cite expired certificates left on supplier records" ([Racklify](https://racklify.com/encyclopedia/approved-vendor-list-compliance-and-audit-roles-evidence-and-inspector-expectations/)), parts ordered with nobody able to say which are affected (customer problem statement), and the company's own certificate. One certification body says a major non-conformity left unresolved "may lead to suspension", and the certificate "may be (temporarily) suspended and eventually may even be withdrawn altogether" ([Control Union](https://www.controlunion.com/findings-and-non-conformities/)); its rules vary by programme, and whether an expired supplier certificate counts as major is the auditor's call. The only money figure I found is a vendor's: [Author-it](https://www.author-it.com/resources/true-cost-iso-non-conformance-manufacturing), which sells documentation software, estimates $15,000 to $80,000 for a major documentation finding, with no data cited, so I do not rely on it.
+
 ### How the research scoped the customer call
 
 Before the call, I compared our plan with how real teams and tools handle this, including [SKU.io](https://www.sku.io/docs/guides/manufacturing/lot-compliance/track-supplier-certificates/) and [SAP Supplier Lifecycle Management](https://help.sap.com/saphelp_slc200/helpdata/en/de/64bbd332d14155ad51166ddbecd26e/content.htm). That showed which of our assumptions had no source, so we knew what to ask instead of guessing.
@@ -158,6 +160,8 @@ Case 12 uses a clean subset on purpose. Changing `--today` alone does not give a
 | Alibaba seller guide, UL and CE certification | https://seller.alibaba.com/blogs/2026/southeast-asia/certification/ul-ce-dual-certification-guide-alibaba-b2b | Certifications tied to products and factories (trade guide) |
 | UL Solutions, Code Authority FAQs | https://code-authorities.ul.com/about/code-authority-faqs/ | UL Listed products |
 | Best PCB, IPC-1752A guide | https://www.bestpcbs.com/blog/2026/08/ipc-1752a/ | Declarations checked against a part number and revision (vendor guide) |
+| Control Union, Findings and non-conformities | https://www.controlunion.com/findings-and-non-conformities/ | An unresolved major non-conformity and suspension |
+| Author-it, The true cost of ISO non-conformance in manufacturing | https://www.author-it.com/resources/true-cost-iso-non-conformance-manufacturing | A vendor's unsourced cost estimate, not relied on |
 | Customer check-in | `docs/customer_questions.md` (Q1–Q6, Q9, Q11, Q12) | Every customer answer above |
 
 ---
