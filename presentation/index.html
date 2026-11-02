@@ -187,7 +187,7 @@
       <div class="stat"><span class="tag">Cost to run</span><b>0.46 MB</b><span class="text">for 10 years of weekly checks, with no licence or database server</span></div>
       <div class="stat"><span class="tag">Trust</span><b>183</b><span class="text">automated tests, run on every pull request</span></div>
     </div>
-    <p class="source">Measured on the product, 2026-11-02, on a MacBook in Python, not Docker. The 1,000-supplier set is generated test data; the others use the sample data. 45 days is the customer's setting (Q4). 183 tests include the new UI, not yet merged.</p>
+    <p class="source">Measured on the product, 2026-11-02, on a MacBook in Python, not Docker. The 1,000-supplier set is generated test data; the others use the sample data. 45 days is the customer's setting (Q4). 183 tests include the new UI.</p>
     <div class="notes-source">Each number comes from running the product. Time and audit are speed on a laptop with generated data. 5 to 4 is on the sample data: PRT-5004 is not held up, because its category does not need the missing document. Next: each of us on our research and what we built.</div>
   </section>
 
@@ -309,7 +309,7 @@ Check 2  as of 2026-10-26  (tool 1.1.0, run ...)
   missing  safety_cert  &mdash;
 Check 1  as of 2026-10-26  (tool 1.1.0, run ...)</pre>
     </div>
-    <p class="source">Real output on the sample data, version 1.1.0; lines wrapped and abridged. 57 of the 183 tests cover these three modules. I also built the browser UI (<code>web.py</code>, 64 tests), not yet merged, which uses the same functions.</p>
+    <p class="source">Real output on the sample data, version 1.1.0; lines wrapped and abridged. 57 of the 183 tests cover these three modules. I also built the browser UI (<code>web.py</code>, 64 tests), which uses the same functions.</p>
     <p class="handoff" style="margin-top:6px"><b>Next:</b> this works on my machine. Now it has to run anywhere.</p>
     <div class="notes-source">Nikita: read each row left to right: my code, then the line of output it produces. The report is plain text, it never decides anything, and it has no database access: it takes flags, at-risk parts and rejected records as arguments. The report answers "what needs action today?". History answers "what did we know on that date?". Each flag in history keeps the expiry date as it was then. Tests: storage 32, report 11, cli 14. Limits I would name: reports show supplier IDs, not names, and there are no days-overdue figures in the plain report. Handoff, say it out loud: "The flags are saved and the report is ready, and all of this works on my machine. Now it has to run anywhere, and Vedanshu shows how."</div>
   </section>
