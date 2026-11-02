@@ -1,5 +1,6 @@
 # A renewal sits on file next to the document it replaces (kept for audit), so date rules judge only
-# the current document per supplier and type: the newest issue_date, then the later expiry on a tie.
+# the current document per supplier and type: an approved one over a pending one (1.1.0), then the
+# newest issue_date, then the later expiry on a tie.
 
 from datetime import date
 
@@ -14,4 +15,5 @@ def current_documents(documents):
 
 
 def _newness(doc):
-    return doc.issue_date, doc.expiry_date or date.max   # no expiry outlasts any date
+    # A pending renewal does not replace an approved document until it is approved.
+    return doc.status == "approved", doc.issue_date, doc.expiry_date or date.max   # no expiry outlasts any date

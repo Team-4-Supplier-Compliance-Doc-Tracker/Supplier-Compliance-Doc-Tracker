@@ -51,7 +51,7 @@ def test_run_end_to_end_writes_db_and_prints_report(data_dir, db_path, capsys):
     assert "PRT-5005  SUP-106  missing quality_cert; missing env_declaration" in out
     assert "PRT-5099  unknown part category" in out
     assert _fetch(db_path, "SELECT as_of_date, tool_version FROM compliance_checks") == [("2026-10-26", __version__)]
-    assert _fetch(db_path, "SELECT COUNT(*) FROM flags") == [(7,)]
+    assert _fetch(db_path, "SELECT COUNT(*) FROM flags") == [(9,)]   # 1.1.0: + pending DOC-013, + missing SUP-105 safety_cert
     parts = {row[0] for row in _fetch(db_path, "SELECT part_number FROM at_risk_parts")}
     assert parts == {"PRT-5002", "PRT-5003", "PRT-5005", "PRT-5006"}
 
@@ -59,7 +59,7 @@ def test_run_end_to_end_writes_db_and_prints_report(data_dir, db_path, capsys):
 def test_run_prints_summary_line_under_header(data_dir, db_path, capsys):
     main(_run_args(data_dir))
     lines = capsys.readouterr().out.splitlines()
-    assert lines[1] == "Checked 5 suppliers and 6 parts: 1 supplier with no issues, 4 parts at risk, 7 flags, 8 rejected records"
+    assert lines[1] == "Checked 5 suppliers and 6 parts: 1 supplier with no issues, 4 parts at risk, 9 flags, 8 rejected records"
 
 
 def test_run_summary_on_a_day_with_no_issues(data_dir, db_path, capsys):
