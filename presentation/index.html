@@ -111,6 +111,19 @@
       padding: 1rem 1.1rem;
     }
     .card strong { display: block; margin-bottom: 0.25rem; }
+    .scroll { overflow-x: auto; margin: 0 0 1rem; }
+    table { border-collapse: collapse; width: 100%; font-size: 0.95rem; background: var(--panel); }
+    th, td { border: 1px solid var(--line); padding: 0.45rem 0.6rem; text-align: left; vertical-align: top; }
+    pre {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 0.9rem 1rem;
+      margin: 0 0 1rem;
+      overflow-x: auto;
+      font-size: 0.85rem;
+      line-height: 1.45;
+    }
     footer {
       margin-top: 2rem;
       color: var(--muted);
@@ -154,10 +167,89 @@
     <section id="nikita">
       <h2>Storage, report, and CLI</h2>
       <p class="byline">Nikita Ravi · ~3 minutes</p>
-      <div class="slot">
-        <p><strong>Placeholder for DOCS-02.</strong> Add: how documents are tracked today and where it goes wrong; where flags live; DB before/after a check; why a failed save rolls back; report from the manager’s view.</p>
-        <p class="handoff">Handoff (draft): The tool works on a laptop. Vedanshu shows how it runs anywhere, keeps history across releases, and rolls back safely.</p>
+
+      <h3>How it is done today, and where it goes wrong</h3>
+      <p>
+        Certificates arrive by email and sit in shared folders. The record is a spreadsheet where expiry is just a cell, so
+        nothing happens when a date passes. Suppliers rarely update documents unless asked, and nobody can say which parts
+        are affected until an auditor asks.
+      </p>
+
+      <h3>What research changed</h3>
+      <p>I researched real workflows before our first customer call, so we knew which assumptions to test.</p>
+      <div class="scroll">
+        <table>
+          <tr><th>We assumed</th><th>We learned</th><th>So the tool</th></tr>
+          <tr><td>A gap affects all of a supplier's parts</td><td>Only parts whose category needs the document (Q5)</td><td>Works out at risk per part</td></tr>
+          <tr><td>History kept, no period set</td><td>ISO sets no period; the customer needs 10 years (Q12)</td><td>Never prunes history</td></tr>
+          <tr><td>"What is expired today?"</td><td>Auditors ask "what did you know on date X?"</td><td>Saves every check with its date</td></tr>
+          <tr><td>One document per supplier and type</td><td>Renewals sit next to the old certificate</td><td>Judges only the current one (PR #14)</td></tr>
+        </table>
       </div>
+
+      <h3>Where flags live</h3>
+      <p>
+        Every run adds one row to <code>compliance_checks</code>. Each flag points to its check and keeps its own copy of the
+        expiry date, so old results never change. At-risk parts have their own table, because one part can have several reasons.
+      </p>
+
+      <h3>The database before and after a check</h3>
+      <div class="scroll">
+        <table>
+          <tr><th>Table</th><th>Empty</th><th>After check 1</th><th>After check 2</th></tr>
+          <tr><td><code>documents</code></td><td>0</td><td>19</td><td>19</td></tr>
+          <tr><td><code>parts</code></td><td>0</td><td>9</td><td>9</td></tr>
+          <tr><td><code>compliance_checks</code></td><td>0</td><td>1</td><td>2</td></tr>
+          <tr><td><code>flags</code></td><td>0</td><td>9</td><td>18</td></tr>
+          <tr><td><code>at_risk_parts</code></td><td>0</td><td>4</td><td>8</td></tr>
+        </table>
+      </div>
+      <p>Same input, version 1.1.0. The inputs are not duplicated, and the history grows with every run.</p>
+
+      <h3>Why a failed save rolls back</h3>
+      <p>
+        A check, its flags and its at-risk parts save in one transaction. Half a check would hide problems from an auditor.
+        <code>test_failed_check_save_rolls_back</code> adds a part that was never saved, so the last insert fails:
+      </p>
+<pre>unsaved_part = AtRiskPart("PRT-NOPE", "SUP-102", ("expired safety_cert",))
+with pytest.raises(sqlite3.IntegrityError):
+    _save_check(seeded_path, at_risk=CHECK_AT_RISK + [unsaved_part])
+assert _fetch(seeded_path, "SELECT COUNT(*) FROM compliance_checks") == [(0,)]
+assert _fetch(seeded_path, "SELECT COUNT(*) FROM flags") == [(0,)]</pre>
+      <div class="callout">The valid flags are undone too. A check is either fully saved or not saved at all.</div>
+
+      <h3>The report, from the manager's view</h3>
+<pre>Compliance report as of 2026-10-26 (tool 1.1.0, check 1)
+Checked 8 suppliers and 9 parts: 4 suppliers with no issues, 4 parts at risk, 9 flags, 8 rejected records
+
+Expired
+  SUP-102  safety_cert  2026-06-01  DOC-005
+...
+Parts at risk
+  PRT-5002  SUP-102  expired safety_cert
+  PRT-5003  SUP-103  missing safety_cert
+  PRT-5005  SUP-106  missing quality_cert; missing env_declaration
+  PRT-5006  SUP-105  missing safety_cert; missing env_declaration
+...</pre>
+      <p>
+        The first lines give the date and the scope. Then the manager sees what is wrong, which parts it affects and whom to
+        chase. For an audit, <code>history SUP-103</code> lists every saved check, newest first.
+      </p>
+
+      <h3>Test cases to watch in the demo</h3>
+      <div class="scroll">
+        <table>
+          <tr><th>Case</th><th>Expected</th></tr>
+          <tr><td>Clean supplier: <code>history SUP-101</code></td><td>No flags in any saved check</td></tr>
+          <tr><td>Expires today: DOC-008</td><td>Expiring soon, not expired</td></tr>
+          <tr><td>Same supplier, different parts: SUP-103</td><td>PRT-5003 at risk, PRT-5004 not</td></tr>
+          <tr><td>No documents at all: SUP-106</td><td>PRT-5005 at risk with two reasons</td></tr>
+          <tr><td>Run it twice</td><td>Header says check 2; flags go from 9 to 18</td></tr>
+        </table>
+      </div>
+      <p>The full list of 12 cases is in <code>docs/client_brief.md</code>.</p>
+
+      <p class="handoff">Handoff: The tool works on a laptop. Vedanshu shows how it runs anywhere, keeps history across releases, and rolls back safely.</p>
     </section>
 
     <section id="vedanshu">
