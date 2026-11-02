@@ -100,7 +100,7 @@ Records are flat. Documents are never nested under suppliers. Extra keys are ign
 All five keys are required. The compliance manager changes required documents, expiring types, or the warning window here, never in code.
 
 - Safety certificates are required only for **cables** and **electrical**: mains-rated parts fall under UL 61058-1 / the CE Low Voltage Directive; mechanical parts and low-voltage logic do not.
-- `expiring_types` leaves out `quality_cert` because the customer says quality certificates have no expiry. `safety_cert` is in the list pending Q8 (UL listings need annual factory audits, so we assume they expire).
+- `expiring_types` leaves out `quality_cert` because the customer says quality certificates have no expiry. `safety_cert` is in the list because the customer confirmed safety certificates expire (Q8).
 
 ### 5. How the tool knows today's date
 
