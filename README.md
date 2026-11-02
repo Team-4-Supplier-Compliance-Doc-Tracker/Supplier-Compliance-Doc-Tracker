@@ -202,6 +202,8 @@ supplier-compliance-tracker/
 │       ├── storage.py            ← connect(), init_schema(), save_documents(), save_parts(), save_check(), supplier_history(), parts_at_risk()
 │       ├── schema.sql
 │       ├── report.py             ← render_report()
+│       ├── web.py                ← `serve`: local server and JSON API for the UI
+│       ├── static/index.html     ← browser UI
 │       └── cli.py                ← main(): `run`, `history`
 ├── scripts/
 │   ├── generate_data.py          ← synthetic data, seeded
@@ -329,6 +331,36 @@ Check 1  as of 2026-10-26  (tool 1.0.0, run 2026-10-30T18:07:30+00:00)
 ```
 
 `--today` overrides `settings.json` `today`, which overrides the system date.
+
+---
+
+## Run the web UI
+
+A browser UI for the same tool. It needs no extra packages or internet connection.
+
+```bash
+PYTHONPATH=src python -m compliance serve
+```
+
+Then open <http://127.0.0.1:8000> and sign in. Options: `--port`, `--host` and `--data-dir` (default `data`).
+
+**Signing in.** The demo account's password is shared within the team and is never written in this repo; the code keeps only a salted hash. To use your own account, set `COMPLIANCE_UI_USER` and `COMPLIANCE_UI_PASSWORD`. These are required for any `--host` other than this machine, including inside Docker. Sessions last 8 hours and end when the server restarts. Five failed attempts lock sign-in for a minute.
+
+| Page | What it does |
+|---|---|
+| **Home** | What the tool does, the current status, the most urgent issues, and what the terms mean |
+| **Issues** | Choose a data set and date, and results update straight away. Each issue explains the problem and the parts affected, with actions |
+| **History** | Every saved check for a supplier, newest first, marking what is new since the previous check |
+| **Input data** | The documents, parts and rejected records the tool read, and what each category requires |
+| **Reminders** (side panel) | Issues grouped by urgency, with days counted from the check date |
+
+**Draft reminder** writes a message to copy into your email. Nothing is sent from the tool, because the customer scoped notifications for later (Q4).
+
+Results match the command line because the UI calls the same loaders, rules, storage and report code. Nothing is saved until you select **Save to history**. Only the sample data can be saved; the scenarios in `data/scenarios/` are preview only.
+
+The UI cannot edit data, upload files or delete history. It uses plain HTTP, so keep it on this machine or a trusted network.
+
+Demo script: [`docs/demo_walkthrough.md`](docs/demo_walkthrough.md).
 
 ---
 
