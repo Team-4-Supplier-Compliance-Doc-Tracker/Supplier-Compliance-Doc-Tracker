@@ -64,18 +64,20 @@ What this changed in what I built:
 
 *Researched and written by: **Nikita Ravi** (DOCS-02). I did this research before our first customer call.*
 
-Supplier certificates arrive by **email** and sit in **shared folders** (customer problem statement). The usual record of them is a spreadsheet or an **approved vendor list (AVL)**, where the expiry date is just a cell.
+Supplier certificates arrive by **email** and sit in **shared folders** (customer problem statement). A common record of them is a spreadsheet or an **approved vendor list (AVL)**, where the expiry date is just a cell.
 
-The paperwork comes in two kinds with different lifecycles:
+This describes a common pattern, not a measured one. Most of the sources below are vendors or practitioner guides, and I found no survey showing how widespread it is. Tracking is also only one stage: real processes also qualify suppliers, review and approve documents, and requalify or suspend suppliers.
+
+The paperwork comes in kinds with different lifecycles:
 
 | Kind | Examples | Belongs to | How it is collected |
 |---|---|---|---|
-| **Supplier credentials** | Quality certificate, safety certificate, environmental declaration | The supplier | Once, then renewed |
+| **Long-lived documents** | Quality certificate, safety certificate, environmental declaration | In this tool, the supplier. In practice, safety and environmental documents are often tied to a product or part (see Known limits) | Once, then renewed |
 | **Shipment evidence** | Certificate of conformance, material test report, heat or lot number | One delivery | With or before each delivery ([Standards Navigator](https://thestandardsnavigator.com/2026/04/18/supplier-quality-requirements/)) |
 
-This tool covers supplier credentials only. Shipment paperwork is a different workflow and is out of scope (Q9).
+This tool tracks long-lived documents only. Shipment paperwork is a different workflow and is out of scope (Q9).
 
-Expiry also works differently by document. RoHS and REACH declarations often have no official expiry ([CR4 discussion](https://cr4.globalspec.com/thread/55713/How-long-is-a-RoHS-Certificate-Valid-for)), so companies set a refresh policy, commonly every 12 months ([GreenSoft](https://greensofttech.com/blog-2026-compliance-data-mgmt-in-practice-pt-1-refreshing-compliance-declarations/)). Our customer renews them yearly (Q3), so the `expiry_date` on a declaration is best read as its refresh-due date.
+Expiry also works differently by document. RoHS and REACH declarations often have no official expiry ([CR4 discussion](https://cr4.globalspec.com/thread/55713/How-long-is-a-RoHS-Certificate-Valid-for)), so a company sets its own refresh policy. One vendor recommends every 12 months for RoHS and standard suppliers, and every 6 months for high-risk suppliers and REACH SVHC ([GreenSoft](https://greensofttech.com/blog-2026-compliance-data-mgmt-in-practice-pt-1-refreshing-compliance-declarations/)). Our customer renews yearly (Q3), so the `expiry_date` on a declaration is best read as its refresh-due date.
 
 ### Where it goes wrong
 
@@ -87,7 +89,7 @@ Expiry also works differently by document. RoHS and REACH declarations often hav
 - **Safety certificates go missing.** The document most often missing is the safety certificate (customer check-in).
 - **Nobody can say which parts are affected** until an auditor asks (customer problem statement).
 
-**What an auditor asks.** ISO 9001 §8.4 expects retained evidence about suppliers ([ISO 9001 Checklist](https://www.iso-9001-checklist.co.uk/8.4-control-of-externally-provided-processes-products-services.htm)), but sets no retention period, so each company chooses one ([Quality Systems](https://qualitysystems.com/support/learning/records-required-by-iso-90012015/)). The hard question is not "what is expired today?" but "what did you know on date X?". A spreadsheet that gets overwritten cannot answer that.
+**What an auditor asks.** ISO 9001 §8.4 expects retained evidence about suppliers ([ISO 9001 Checklist](https://www.iso-9001-checklist.co.uk/8.4-control-of-externally-provided-processes-products-services.htm)), but sets no retention period, so each company chooses one ([Quality Systems](https://qualitysystems.com/support/learning/records-required-by-iso-90012015/)). My own conclusion from this, not a quote from a source, is that the harder question is not "what is expired today?" but "what did you know on date X?". A spreadsheet that gets overwritten cannot answer that.
 
 ### How the research scoped the customer call
 
@@ -101,12 +103,16 @@ Before the call, I compared our plan with how real teams and tools handle this, 
 | SAP holds a supplier upload as pending until a purchaser approves it | A document is present or missing | Customer wants a pending / approved / missing view (Q6) | `status` field; `pending` flag in 1.1.0 |
 | Real systems set requirements by category or supplier | Every gap affects all of a supplier's parts | Customer: only parts whose category requires the document (Q5) | At risk is worked out per part |
 | ISO sets no retention period | History kept with no stated period | Customer: 10 years (Q12) | History is never pruned |
-| Paperwork comes in two kinds | Documents attach to suppliers, never to shipments | Shipment paperwork is out of scope (Q9) | Supplier credentials only |
+| Paperwork comes in two kinds | Documents attach to suppliers, never to shipments | Shipment paperwork is out of scope (Q9) | Long-lived documents only |
 | SKU.io stores a renewal as a new document and keeps the old one, so an old row could keep flagging a renewed supplier | One active document per supplier and type | Team decision, not a customer answer (Q11) | Only the newest approved document is judged; the old one stays on file |
 
-**What research did not get right.** I expected quality certificates to expire, and the customer said otherwise for their records. We built to the customer's answer. Dheepthi's section records this as an open question.
+**What research did not get right.** I expected quality certificates to expire, and the customer said otherwise for their records. We built to the customer's answer. Dheepthi's section records this as an open question. I also grouped RoHS and REACH declarations with supplier-level documents, which is simpler than real practice (see below).
 
-**Known limits.** The research also found things real systems have that this tool deliberately does not: the certificate's issuer and reference number, a supplier name (reports show the ID), days overdue, who reviewed a document, more than one supplier per part, and scheduled runs (the customer runs weekly, started by hand).
+**Known limits.**
+
+- **Documents per supplier, not per part.** The tool assumes one supplier's safety certificate or environmental declaration covers all its parts in that category. In practice these are often narrower: certifications can be "tied to specific products and factories" ([Alibaba seller guide](https://seller.alibaba.com/blogs/2026/southeast-asia/certification/ul-ce-dual-certification-guide-alibaba-b2b)), UL lists products ([UL FAQ](https://code-authorities.ul.com/about/code-authority-faqs/)), and a material declaration is checked against a "product or part number and revision" ([Best PCB](https://www.bestpcbs.com/blog/2026/08/ipc-1752a/)). Supplier-level tracking fits our scope, but a real rollout may need documents linked to parts.
+- **Things real systems have that this tool deliberately does not:** the certificate's issuer and reference number, a supplier name (reports show the ID), days overdue, who reviewed a document, more than one supplier per part, and scheduled runs (the customer runs weekly, started by hand).
+- **Our pending rule is stricter than SAP's.** SAP shows a pending certificate as a yellow warning. In 1.1.0, a pending document counts as missing and can put a part at risk.
 
 ### Test cases for the demo
 
@@ -149,6 +155,9 @@ Case 12 uses a clean subset on purpose. Changing `--today` alone does not give a
 | SAP Supplier Lifecycle Management, Certificate Status | https://help.sap.com/saphelp_slc200/helpdata/en/de/64bbd332d14155ad51166ddbecd26e/content.htm | Pending approval; 30-day warning |
 | ISO 9001 Checklist, §8.4 | https://www.iso-9001-checklist.co.uk/8.4-control-of-externally-provided-processes-products-services.htm | What auditors look for |
 | Quality Systems, Records required by ISO 9001:2015 | https://qualitysystems.com/support/learning/records-required-by-iso-90012015/ | No set retention period |
+| Alibaba seller guide, UL and CE certification | https://seller.alibaba.com/blogs/2026/southeast-asia/certification/ul-ce-dual-certification-guide-alibaba-b2b | Certifications tied to products and factories (trade guide) |
+| UL Solutions, Code Authority FAQs | https://code-authorities.ul.com/about/code-authority-faqs/ | UL Listed products |
+| Best PCB, IPC-1752A guide | https://www.bestpcbs.com/blog/2026/08/ipc-1752a/ | Declarations checked against a part number and revision (vendor guide) |
 | Customer check-in | `docs/customer_questions.md` (Q1–Q6, Q9, Q11, Q12) | Every customer answer above |
 
 ---

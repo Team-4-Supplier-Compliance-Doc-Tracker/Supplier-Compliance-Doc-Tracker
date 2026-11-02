@@ -1,0 +1,841 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Supplier Compliance Tracker</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #ffffff; --surface: #ffffff; --subtle: #f5f5f4; --ink: #18181b; --muted: #63636b; --line: #e4e4e7; --strong-line: #a1a1aa;
+    --accent: #18181b; --accent-ink: #ffffff; --accent-soft: #f4f4f5; --link: #1d4e89;
+    --alert: #b42318; --alert-soft: #fdf3f2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #141416; --surface: #141416; --subtle: #1d1d20; --ink: #ececee; --muted: #a1a1aa; --line: #2e2e33; --strong-line: #5c5c64;
+      --accent: #ececee; --accent-ink: #141416; --accent-soft: #232327; --link: #9dbce3;
+      --alert: #f29f97; --alert-soft: #2b1b1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; }
+  h1 { font-size: 22px; font-weight: 600; line-height: 1.25; margin: 0 0 6px; letter-spacing: -0.015em; }
+  h2 { font-size: 14px; font-weight: 600; margin: 0 0 2px; }
+  h3 { font-size: 13px; font-weight: 600; margin: 0; }
+  p { margin: 0; }
+  a { color: var(--link); }
+  .muted { color: var(--muted); }
+  .small { font-size: 13px; }
+  :focus-visible { outline: 2px solid var(--link); outline-offset: 1px; }
+
+  button { font: inherit; cursor: pointer; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; min-height: 32px; padding: 4px 12px; font-weight: 500; font-size: 13px; border-radius: 3px; border: 1px solid var(--strong-line); background: var(--surface); color: var(--ink); white-space: nowrap; }
+  .btn:hover:not(:disabled) { background: var(--accent-soft); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .btn.primary:hover:not(:disabled) { background: var(--accent); opacity: .86; }
+  .btn:disabled { opacity: .45; cursor: not-allowed; }
+  .btn.quiet { border-color: transparent; background: none; color: var(--muted); padding-inline: 6px; }
+  .btn.quiet:hover:not(:disabled) { background: none; color: var(--ink); text-decoration: underline; }
+
+  label.field { display: block; font-size: 12px; font-weight: 500; color: var(--muted); }
+  select, input { display: block; width: 100%; margin-top: 4px; min-height: 34px; padding: 5px 9px; font: inherit; font-size: 14px; color: var(--ink); background-color: var(--surface); border: 1px solid var(--strong-line); border-radius: 3px; }
+  select { appearance: none; -webkit-appearance: none; padding-right: 28px; background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%); background-size: 4px 4px, 4px 4px; background-position: right 14px center, right 10px center; background-repeat: no-repeat; }
+
+  /* Sign in */
+  #login-view { min-height: 100vh; display: grid; place-items: center; padding: 16px; background: var(--subtle); }
+  .login-card { width: 100%; max-width: 360px; background: var(--surface); border: 1px solid var(--line); border-radius: 4px; padding: 24px; }
+  .login-card h1 { font-size: 18px; }
+  .login-card form { display: grid; gap: 12px; margin-top: 18px; }
+  .password-row { position: relative; }
+  .password-row input { padding-right: 58px; }
+  .password-row button { position: absolute; right: 2px; bottom: 1px; }
+
+  /* Header */
+  .topbar { background: var(--surface); border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 5; }
+  .topbar-inner { max-width: 1080px; margin: 0 auto; padding: 0 20px; display: flex; flex-wrap: wrap; align-items: center; gap: 0 20px; min-height: 48px; }
+  .brand { font-weight: 600; }
+  nav { display: flex; flex-wrap: wrap; align-self: stretch; margin-right: auto; }
+  nav a { display: flex; align-items: center; padding: 0 10px; min-height: 48px; color: var(--muted); font-size: 13px; font-weight: 500; text-decoration: none; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+  nav a:hover { color: var(--ink); }
+  nav a[aria-current="page"] { color: var(--ink); border-bottom-color: var(--ink); }
+  .top-actions { display: flex; align-items: center; gap: 6px; }
+  .count { margin-left: 6px; color: var(--alert); font-weight: 600; }
+
+  main { max-width: 1080px; margin: 0 auto; padding: 28px 20px 72px; }
+  .view { display: grid; gap: 20px; grid-template-columns: minmax(0, 1fr); }
+  .card { background: none; border: 0; border-top: 1px solid var(--line); border-radius: 0; padding: 16px 0 0; }
+  .actions { display: flex; flex-wrap: wrap; gap: 6px; }
+  .notice { border-radius: 3px; padding: 8px 12px; overflow-wrap: anywhere; background: var(--subtle); font-size: 13px; }
+  .notice.error { background: var(--alert-soft); color: var(--alert); }
+
+  /* Home */
+  .card.hero { border-top: 0; padding-top: 0; }
+  .hero p.lead { font-size: 15px; color: var(--muted); max-width: 66ch; }
+  .status { margin-top: 20px; padding: 14px 16px; background: var(--subtle); border-radius: 4px; display: grid; gap: 8px; }
+  .status-line { font-size: 15px; font-weight: 600; }
+  .steps { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin: 10px 0 0; padding: 0; list-style: none; counter-reset: step; }
+  .steps li { counter-increment: step; }
+  .steps li::before { content: counter(step) "."; display: block; color: var(--muted); font-size: 13px; margin-bottom: 2px; }
+  dl.terms { display: grid; grid-template-columns: minmax(130px, max-content) 1fr; gap: 6px 20px; margin: 12px 0 0; }
+  dl.terms dt { font-weight: 500; }
+  dl.terms dd { margin: 0; color: var(--muted); }
+  details > summary { cursor: pointer; font-weight: 600; }
+
+  /* Issues */
+  .controls { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(190px, 240px)); align-items: end; }
+  .controls .btn { min-height: 34px; justify-self: start; }
+  .chips { display: flex; flex-wrap: wrap; gap: 0 18px; flex: 1 1 420px; border-bottom: 1px solid var(--line); }
+  .chip { min-height: 34px; padding: 0 0 6px; border: 0; border-bottom: 2px solid transparent; margin-bottom: -1px; background: none; color: var(--muted); font-size: 13px; font-weight: 500; }
+  .chip:hover { color: var(--ink); }
+  .chip[aria-pressed="true"] { color: var(--ink); border-bottom-color: var(--ink); }
+  .filter-row { display: flex; flex-wrap: wrap; gap: 12px 24px; justify-content: space-between; align-items: end; }
+  .filter-row label { width: 190px; }
+  .list { display: grid; gap: 0; grid-template-columns: minmax(0, 1fr); border-top: 1px solid var(--line); }
+  .issue { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 24px; row-gap: 2px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+  .issue > * { grid-column: 1; }
+  .issue > .actions { grid-column: 2; grid-row: 1 / span 4; align-self: start; }
+  .issue-title { font-weight: 500; }
+  .issue-title::before { content: ""; display: inline-block; width: 7px; height: 7px; margin: 0 8px 1px 0; border: 1px solid var(--strong-line); border-radius: 50%; }
+  .issue.action .issue-title::before { background: var(--alert); border-color: var(--alert); }
+  .issue > .small, .issue > .muted { padding-left: 17px; }
+  .issue .btn.primary { background: var(--surface); border-color: var(--strong-line); color: var(--ink); }
+  .issue .btn.primary:hover:not(:disabled) { background: var(--accent-soft); opacity: 1; }
+  #issue-list { border-top: 0; margin-top: -8px; }
+  .list > .notice { margin-top: 12px; }
+  .scroll { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; min-width: 540px; font-size: 13px; }
+  th, td { border-bottom: 1px solid var(--line); padding: 7px 12px 7px 0; text-align: left; vertical-align: top; }
+  tr:last-child td { border-bottom: 0; }
+  th { color: var(--muted); font-size: 12px; font-weight: 500; white-space: nowrap; }
+  td:last-child, th:last-child { padding-right: 0; }
+  pre { margin: 12px 0 0; overflow-x: auto; font: 12px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .new-tag { margin-left: 6px; color: var(--alert); font-size: 12px; font-weight: 500; }
+
+  /* Reminders panel */
+  .scrim { position: fixed; inset: 0; background: rgba(0, 0, 0, .28); z-index: 9; }
+  #panel { position: fixed; top: 0; right: 0; bottom: 0; width: min(420px, 100vw); background: var(--surface); border-left: 1px solid var(--line); z-index: 10; display: flex; flex-direction: column; animation: slide .14s ease-out; }
+  .panel-head { padding: 12px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 12px; align-items: start; }
+  .panel-head h2 { font-size: 15px; }
+  .panel-body { padding: 16px; overflow-y: auto; display: grid; gap: 24px; align-content: start; grid-template-columns: minmax(0, 1fr); flex: 1; }
+  .group { display: grid; gap: 8px; grid-template-columns: minmax(0, 1fr); }
+  .group .issue { padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .group .issue:last-child { border-bottom: 0; }
+  #panel .issue { grid-template-columns: minmax(0, 1fr); }
+  #panel .issue > .actions { grid-column: 1; grid-row: auto; margin: 6px 0 0 17px; }
+
+  dialog { width: min(540px, calc(100vw - 32px)); border: 1px solid var(--line); border-radius: 4px; background: var(--surface); color: var(--ink); padding: 18px; }
+  dialog::backdrop { background: rgba(0, 0, 0, .35); }
+  dialog h2 { font-size: 15px; margin-bottom: 4px; }
+  dialog textarea { display: block; width: 100%; min-height: 280px; margin: 12px 0; padding: 10px; font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: var(--ink); background: var(--subtle); border: 1px solid var(--line); border-radius: 3px; resize: vertical; }
+
+  #toast { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); width: max-content; max-width: calc(100vw - 32px); padding: 8px 12px; background: var(--ink); color: var(--bg); border-radius: 3px; z-index: 20; font-size: 13px; display: flex; gap: 12px; align-items: center; }
+  #toast a { color: inherit; font-weight: 500; }
+  @keyframes slide { from { transform: translateX(16px); opacity: 0; } }
+
+  @media (max-width: 720px) {
+    .topbar-inner { padding: 6px 16px; }
+    nav { order: 3; width: 100%; margin-right: 0; }
+    nav a { min-height: 40px; padding: 0 12px 0 0; }
+    .top-actions { margin-left: auto; }
+    main { padding: 20px 16px 56px; }
+    .issue { grid-template-columns: minmax(0, 1fr); }
+    .issue > .actions { grid-column: 1; grid-row: auto; margin: 6px 0 0 17px; }
+    .controls { grid-template-columns: minmax(0, 1fr); }
+    .filter-row label { width: 100%; }
+    dl.terms { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+    dl.terms dd { margin-bottom: 8px; }
+  }
+  @media (pointer: coarse) {
+    .btn, select, input { min-height: 44px; }
+    .chip { min-height: 44px; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+
+<div id="login-view" hidden>
+  <div class="login-card">
+    <h1>Supplier Compliance Tracker</h1>
+    <p class="muted">Internal tool. Sign in to see which supplier documents need attention.</p>
+    <form id="login-form" novalidate>
+      <label class="field">Username <input id="login-username" name="username" autocomplete="username" autocapitalize="off" spellcheck="false" required></label>
+      <label class="field">Password
+        <div class="password-row">
+          <input id="login-password" name="password" type="password" autocomplete="current-password" required>
+          <button id="login-show" class="btn quiet" type="button" aria-pressed="false">Show</button>
+        </div>
+      </label>
+      <div id="login-error" class="notice error" role="alert" hidden></div>
+      <button id="login-submit" class="btn primary" type="submit">Sign in</button>
+    </form>
+    <p class="muted small" style="margin-top:16px">All data in this tool is synthetic.</p>
+  </div>
+</div>
+
+<div id="app" hidden>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">Supplier Compliance</div>
+      <nav aria-label="Main">
+        <a href="#/home" data-route="home">Home</a>
+        <a href="#/issues" data-route="issues">Issues</a>
+        <a href="#/history" data-route="history">History</a>
+        <a href="#/data" data-route="data">Input data</a>
+      </nav>
+      <div class="top-actions">
+        <button id="open-panel" class="btn" type="button">Reminders<span id="reminder-count" class="count" hidden></span></button>
+        <button id="sign-out" class="btn quiet" type="button">Sign out</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <div id="startup-error" class="notice error" role="alert" hidden></div>
+
+    <section id="view-home" class="view" hidden>
+      <div class="card hero">
+        <h1>Know which supplier documents need attention</h1>
+        <p class="lead">Certificates expire unnoticed in email and spreadsheets. This tool checks your list, flags the problems, shows which parts are affected, and keeps a dated history for audits. It never approves or blocks anything: you decide.</p>
+        <div class="status" aria-live="polite">
+          <p id="home-status" class="status-line">Checking your documents…</p>
+          <p id="home-context" class="muted small"></p>
+          <div class="actions">
+            <a id="home-review" class="btn primary" href="#/issues" style="text-decoration:none;display:inline-flex;align-items:center">Review issues</a>
+            <button id="home-reminders" class="btn" type="button">Open reminders</button>
+          </div>
+        </div>
+      </div>
+      <div id="home-urgent-wrap" hidden>
+        <h2>Most urgent</h2>
+        <div id="home-urgent" class="list" style="margin-top:8px"></div>
+      </div>
+      <div class="card">
+        <h2>How it works</h2>
+        <ol class="steps">
+          <li><h3>Read the list</h3><p class="muted small">Takes the documents and parts on file, and rejects broken records with a reason.</p></li>
+          <li><h3>Flag the problems</h3><p class="muted small">Finds what is expired, expiring or missing, and which parts that puts at risk.</p></li>
+          <li><h3>You decide</h3><p class="muted small">Chase the supplier, then save the check so you can show what you knew on that date.</p></li>
+        </ol>
+      </div>
+      <details class="card">
+        <summary>What the words mean</summary>
+        <dl class="terms">
+          <dt>Expired</dt><dd>The expiry date has passed. A document is still valid on its expiry date.</dd>
+          <dt>Expiring soon</dt><dd>Valid now, but it runs out within the warning window of 45 days. This is a warning, so parts are not at risk yet.</dd>
+          <dt>Missing</dt><dd>A part needs this document type and the supplier has no usable one on file.</dd>
+          <dt>Waiting for approval</dt><dd>Received but not approved yet, so it does not count as on file.</dd>
+          <dt>At risk</dt><dd>A part whose own category needs a document that is expired or missing. Other parts from that supplier are not affected.</dd>
+          <dt>Could not use</dt><dd>A broken record, such as a bad date. It is rejected with a reason and never saved.</dd>
+        </dl>
+      </details>
+    </section>
+
+    <section id="view-issues" class="view" hidden>
+      <div>
+        <h1>Issues</h1>
+        <p class="muted">Choose what to check. Results update as you change these, and nothing is saved until you select <strong>Save to history</strong>.</p>
+      </div>
+      <div class="card">
+        <div class="controls">
+          <label class="field">Data set <select id="run-dataset"></select></label>
+          <label class="field">Check as of <select id="run-date"></select></label>
+          <button id="save-button" class="btn primary" type="button">Save to history</button>
+        </div>
+        <p id="run-description" class="muted small" style="margin-top:10px"></p>
+      </div>
+      <div id="run-status" aria-live="polite"></div>
+      <div id="run-results" class="view" hidden>
+        <p id="run-summary" class="status-line"></p>
+        <div class="filter-row">
+          <div id="severity-chips" class="chips" role="group" aria-label="Filter by type"></div>
+          <label class="field">Supplier <select id="filter-supplier"></select></label>
+        </div>
+        <div id="issue-list" class="list"></div>
+        <div class="card">
+          <h2 id="risk-title">Parts at risk</h2>
+          <p class="muted small">Only parts whose own category needs the document.</p>
+          <div id="risk-table" style="margin-top:8px"></div>
+        </div>
+        <details class="card"><summary>Plain-text report (same as the command line)</summary><pre id="report-text"></pre></details>
+      </div>
+    </section>
+
+    <section id="view-history" class="view" hidden>
+      <div>
+        <h1>Supplier history</h1>
+        <p class="muted">Every saved check for a supplier, newest first. Use this to answer "what did you know on date X?". Previews are not saved, so they do not appear here.</p>
+      </div>
+      <div class="card"><label class="field">Supplier <select id="history-supplier"></select></label></div>
+      <div id="history-status" aria-live="polite"></div>
+      <div id="history-results" class="list"></div>
+    </section>
+
+    <section id="view-data" class="view" hidden>
+      <div>
+        <h1>Input data</h1>
+        <p class="muted">What the tool read. Everything here is synthetic. Bad records are rejected with a reason and never saved.</p>
+      </div>
+      <div class="card controls">
+        <label class="field">Data set <select id="data-dataset"></select></label>
+        <label class="field">Supplier <select id="data-supplier"></select></label>
+      </div>
+      <div id="data-status" aria-live="polite"></div>
+      <div id="data-results" class="view" hidden>
+        <div class="card"><h2>What each part category requires</h2><div id="data-required" style="margin-top:8px"></div><p id="data-settings" class="muted small" style="margin-top:8px"></p></div>
+        <div class="card"><h2 id="data-documents-title">Documents</h2><div id="data-documents" style="margin-top:8px"></div></div>
+        <div class="card"><h2 id="data-parts-title">Parts</h2><div id="data-parts" style="margin-top:8px"></div></div>
+        <div class="card"><h2 id="data-rejected-title">Rejected records</h2><div id="data-rejected" style="margin-top:8px"></div></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div id="scrim" class="scrim" hidden></div>
+<aside id="panel" role="dialog" aria-modal="true" aria-labelledby="panel-title" hidden>
+  <div class="panel-head">
+    <div>
+      <h2 id="panel-title">Reminders</h2>
+      <p id="panel-context" class="muted small"></p>
+    </div>
+    <button id="close-panel" class="btn" type="button">Close</button>
+  </div>
+  <div id="panel-body" class="panel-body"></div>
+</aside>
+
+<dialog id="draft-dialog" aria-labelledby="draft-title">
+  <h2 id="draft-title">Draft reminder</h2>
+  <p class="muted small">Nothing is sent from here. Copy this into your email. Reports show supplier IDs, so add the contact yourself.</p>
+  <textarea id="draft-text" readonly aria-label="Draft reminder text"></textarea>
+  <div class="actions">
+    <button id="draft-copy" class="btn primary" type="button">Copy text</button>
+    <button id="draft-close" class="btn" type="button">Close</button>
+  </div>
+</dialog>
+
+<div id="toast" role="status" hidden></div>
+
+<script>
+"use strict";
+const DOCUMENT_LABELS = { quality_cert: "Quality certificate", safety_cert: "Safety certificate", env_declaration: "Environmental declaration" };
+const GROUPS = [
+  { key: "action", label: "Needs action", hint: "Expired or missing. Parts that need these documents are at risk." },
+  { key: "soon", label: "Expiring soon", hint: "Still valid. Chase the renewal now." },
+  { key: "review", label: "Waiting for approval", hint: "Received, but not counted until approved." },
+  { key: "unreadable", label: "Could not use", hint: "Broken records. Fix or ask for a new copy." },
+];
+const ALL = "__all__";
+const REQUEST_TIMEOUT_MS = 15000;
+const $ = (id) => document.getElementById(id);
+
+const state = { options: null, run: null, data: null, severity: "all", supplier: ALL, saved: false, username: null };
+let runToken = 0, historyToken = 0, dataToken = 0, toastTimer = null, panelReturnFocus = null;
+
+async function api(path, options) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  let response;
+  try {
+    response = await fetch(path, { ...options, signal: controller.signal });
+  } catch (error) {
+    throw new Error("Can't reach the server. Check that `python -m compliance serve` is still running, then try again.");
+  } finally {
+    clearTimeout(timer);
+  }
+  let payload;
+  try {
+    payload = await response.json();
+  } catch (error) {
+    throw new Error("The server sent a response this page could not read. Try again.");
+  }
+  if (response.status === 401 && path !== "/api/login") {
+    showLogin("Your session ended. Sign in again to continue.");
+    const error = new Error("Sign in to continue.");
+    error.signedOut = true;
+    throw error;
+  }
+  if (!response.ok) throw new Error(payload.error || "The request failed. Try again.");
+  return payload;
+}
+
+const post = (path, body) => api(path, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+
+function el(tag, props, children) {
+  const node = document.createElement(tag);
+  if (props) Object.assign(node, props);
+  for (const child of [].concat(children ?? [])) node.append(child);
+  return node;
+}
+
+function button(label, className, onClick) {
+  const node = el("button", { type: "button", className: "btn " + className, textContent: label });
+  node.addEventListener("click", onClick);
+  return node;
+}
+
+function fillSelect(select, items, value) {
+  select.replaceChildren(...items.map((item) => el("option", { value: item.value, textContent: item.label })));
+  if (value !== undefined && items.some((item) => item.value === value)) select.value = value;
+}
+
+function setNotice(id, kind, message) {
+  const box = $(id);
+  box.replaceChildren();
+  if (message) box.append(el("div", { className: "notice " + kind, textContent: message }));
+}
+
+function table(headers, rows, emptyMessage) {
+  if (!rows.length) return el("p", { className: "muted", textContent: emptyMessage });
+  const head = el("tr", null, headers.map((text) => el("th", { scope: "col", textContent: text })));
+  const body = rows.map((cells) => el("tr", null, cells.map((cell) => el("td", null, cell))));
+  return el("div", { className: "scroll" }, el("table", null, [el("thead", null, head), el("tbody", null, body)]));
+}
+
+const orDash = (value) => value || "—";
+const documentLabel = (type) => DOCUMENT_LABELS[type] || type;
+const plural = (n, word) => n + " " + word + (n === 1 ? "" : "s");
+const showIn = (id, node) => $(id).replaceChildren(node);
+
+function toast(message, link) {
+  const box = $("toast");
+  box.replaceChildren(el("span", { textContent: message }));
+  if (link) box.append(el("a", { href: link.href, textContent: link.text }));
+  box.hidden = false;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { box.hidden = true; }, 5000);
+}
+
+// Sign in
+
+function showLogin(message) {
+  closePanel(false);
+  if ($("draft-dialog").open) $("draft-dialog").close();
+  state.options = state.run = state.data = null;
+  $("app").hidden = true;
+  $("login-view").hidden = false;
+  $("login-error").hidden = !message;
+  $("login-error").textContent = message || "";
+  $("login-password").value = "";
+  $("login-username").focus();
+}
+
+async function submitLogin(event) {
+  event.preventDefault();
+  const username = $("login-username").value.trim(), password = $("login-password").value;
+  if (!username || !password) {
+    $("login-error").textContent = "Enter your username and password.";
+    $("login-error").hidden = false;
+    return;
+  }
+  $("login-submit").disabled = true;
+  $("login-submit").textContent = "Signing in…";
+  try {
+    const session = await post("/api/login", { username, password });
+    $("login-password").value = "";
+    await enterApp(session.username);
+  } catch (error) {
+    $("login-error").textContent = error.message;
+    $("login-error").hidden = false;
+    $("login-password").value = "";
+    $("login-password").focus();
+  } finally {
+    $("login-submit").disabled = false;
+    $("login-submit").textContent = "Sign in";
+  }
+}
+
+async function signOut() {
+  try {
+    await post("/api/logout", {});
+  } catch (error) {
+    // The session is gone from this page either way.
+  }
+  location.hash = "#/home";
+  showLogin("");
+}
+
+async function enterApp(username) {
+  state.username = username;
+  $("login-view").hidden = true;
+  $("app").hidden = false;
+  $("sign-out").textContent = "Sign out (" + username + ")";
+  if (!location.hash) history.replaceState(null, "", "#/home");
+  await loadOptions();
+}
+
+async function loadOptions() {
+  const box = $("startup-error");
+  box.hidden = true;
+  try {
+    const options = await api("/api/options");
+    state.options = options;
+    const datasets = options.datasets.map((d) => ({ value: d.id, label: d.label }));
+    fillSelect($("run-dataset"), datasets);
+    fillSelect($("data-dataset"), datasets);
+    fillSelect($("run-date"), options.dates, options.default_as_of);
+    fillSelect($("history-supplier"), options.suppliers.map((s) => ({ value: s, label: s })));
+    fillSelect($("data-supplier"), [{ value: ALL, label: "All suppliers" }]);
+    route();
+    runCheck();
+  } catch (error) {
+    if (error.signedOut) return;
+    const retry = button("Try again", "quiet", loadOptions);
+    box.replaceChildren(el("span", { textContent: error.message }), retry);
+    box.hidden = false;
+    $("home-status").textContent = "The check could not start.";
+  }
+}
+
+// Routing
+
+function route() {
+  if (!state.options) return;
+  const [, name = "home", value] = location.hash.split("/");
+  const known = ["home", "issues", "history", "data"].includes(name) ? name : "home";
+  for (const view of ["home", "issues", "history", "data"]) $("view-" + view).hidden = view !== known;
+  document.querySelectorAll("nav a").forEach((link) => {
+    if (link.dataset.route === known) link.setAttribute("aria-current", "page");
+    else link.removeAttribute("aria-current");
+  });
+  const param = value ? decodeURIComponent(value) : null;
+  if (known === "history") {
+    if (param && state.options.suppliers.includes(param)) $("history-supplier").value = param;
+    loadHistory();
+  }
+  if (known === "data") loadData(param);
+  if (known === "issues" && param && state.run) { state.severity = "all"; state.supplier = param; renderIssues(); }
+  window.scrollTo(0, 0);
+}
+
+// Running a check
+
+function selectedDataset() {
+  return state.options.datasets.find((d) => d.id === $("run-dataset").value);
+}
+
+function syncSaveButton() {
+  const dataset = selectedDataset();
+  if (!dataset) return;
+  $("run-description").textContent = dataset.description;
+  const canSave = dataset.can_save && state.run && !state.saved;
+  $("save-button").disabled = !canSave;
+  $("save-button").textContent = state.saved ? "Saved" : "Save to history";
+  $("save-button").title = dataset.can_save ? "" : "Scenarios are preview only";
+}
+
+async function runCheck(save = false) {
+  const token = ++runToken;
+  state.saved = false;
+  $("save-button").disabled = true;
+  if (!save) setNotice("run-status", "", "Checking…");
+  try {
+    const result = await post("/api/run", { dataset: $("run-dataset").value, as_of: $("run-date").value, save });
+    if (token !== runToken) return;
+    state.run = result;
+    state.saved = result.saved;
+    if (!state.run.reminders.some((r) => r.supplier_id === state.supplier)) state.supplier = ALL;
+    setNotice("run-status", "", "");
+    renderAll();
+    if (result.saved) toast("Saved as check " + result.check_id + ".", { href: "#/history", text: "View history" });
+  } catch (error) {
+    if (token !== runToken || error.signedOut) return;
+    state.run = null;
+    setNotice("run-status", "error", error.message);
+    renderAll();
+  } finally {
+    if (token === runToken) syncSaveButton();
+  }
+}
+
+function renderAll() {
+  renderHome();
+  renderIssues();
+  renderCount();
+  if (!$("panel").hidden) renderPanel();
+  syncSaveButton();
+}
+
+function renderCount() {
+  const total = state.run ? state.run.reminders.length : 0;
+  $("reminder-count").textContent = String(total);
+  $("reminder-count").hidden = total === 0;
+  $("open-panel").setAttribute("aria-label", "Reminders, " + plural(total, "item"));
+}
+
+function runContext() {
+  const dataset = selectedDataset();
+  return "As of " + state.run.as_of + ", " + (dataset ? dataset.label.toLowerCase() : "selected data") + ".";
+}
+
+function renderHome() {
+  const run = state.run;
+  if (!run) {
+    $("home-status").textContent = "The current data could not be checked.";
+    $("home-context").textContent = "Open Issues to see the error and choose another data set.";
+    $("home-urgent-wrap").hidden = true;
+    return;
+  }
+  const needAction = run.reminders.filter((r) => r.severity === "action").length;
+  const soon = run.reminders.filter((r) => r.severity === "soon").length;
+  $("home-status").textContent = needAction || soon || run.counts.at_risk
+    ? plural(run.counts.at_risk, "part") + " at risk, " + plural(needAction, "issue") + " need" + (needAction === 1 ? "s" : "") + " action, " + soon + " expiring soon."
+    : "No issues found.";
+  $("home-context").textContent = runContext() + " Checked " + plural(run.counts.suppliers, "supplier") + " and " + plural(run.counts.parts, "part") + "; " + run.counts.clean_suppliers + " with no issues.";
+  const urgent = run.reminders.filter((r) => r.severity === "action" || r.severity === "soon").slice(0, 3);
+  $("home-urgent-wrap").hidden = !urgent.length;
+  $("home-urgent").replaceChildren(...urgent.map(issueCard));
+}
+
+function issueCard(reminder) {
+  const meta = [reminder.supplier_id || "No supplier", reminder.document_id, reminder.expiry_date ? "Expiry " + reminder.expiry_date : null].filter(Boolean).join(" · ");
+  const card = el("article", { className: "issue " + reminder.severity }, [
+    el("div", { className: "issue-title", textContent: reminder.title }),
+    el("div", { className: "muted small", textContent: meta }),
+    el("div", { className: "small", textContent: reminder.why }),
+  ]);
+  if (reminder.affected_parts.length) {
+    card.append(el("div", { className: "small", textContent: "Parts: " + reminder.affected_parts.map((p) => p.part_number + " (" + p.description + ")").join(", ") }));
+  }
+  const actions = el("div", { className: "actions" });
+  if (reminder.draft) actions.append(button("Draft reminder", "primary", () => openDraft(reminder)));
+  if (reminder.kind === "rejected") {
+    actions.append(button("View record", reminder.draft ? "" : "primary", () => go("#/data/" + encodeURIComponent(reminder.supplier_id || ALL))));
+  } else if (reminder.kind === "pending") {
+    actions.append(button("View document", "primary", () => go("#/data/" + encodeURIComponent(reminder.supplier_id))));
+  }
+  if (reminder.kind !== "rejected") actions.append(button("View history", "", () => go("#/history/" + encodeURIComponent(reminder.supplier_id))));
+  card.append(actions);
+  return card;
+}
+
+function go(hash) {
+  closePanel(false);
+  if (location.hash === hash) route();
+  else location.hash = hash;
+}
+
+function renderIssues() {
+  const run = state.run;
+  $("run-results").hidden = !run;
+  if (!run) return;
+  $("run-summary").textContent = run.reminders.length
+    ? runContext() + " " + plural(run.counts.at_risk, "part") + " at risk across " + plural(run.counts.suppliers - run.counts.clean_suppliers, "supplier") + "."
+    : runContext() + " No issues found.";
+
+  const suppliers = [...new Set(run.reminders.map((r) => r.supplier_id).filter(Boolean))].sort();
+  fillSelect($("filter-supplier"), [{ value: ALL, label: "All suppliers" }, ...suppliers.map((s) => ({ value: s, label: s }))], state.supplier);
+  const bySupplier = run.reminders.filter((r) => state.supplier === ALL || r.supplier_id === state.supplier);
+  const chips = [{ key: "all", label: "All", count: bySupplier.length }, ...GROUPS.map((g) => ({ key: g.key, label: g.label, count: bySupplier.filter((r) => r.severity === g.key).length }))];
+  $("severity-chips").replaceChildren(...chips.map((chip) => {
+    const node = el("button", { type: "button", className: "chip", textContent: chip.label + " (" + chip.count + ")" });
+    node.setAttribute("aria-pressed", String(state.severity === chip.key));
+    node.addEventListener("click", () => { state.severity = chip.key; renderIssues(); });
+    return node;
+  }));
+
+  const shown = bySupplier.filter((r) => state.severity === "all" || r.severity === state.severity);
+  const empty = run.reminders.length ? "Nothing matches these filters." : "No issues found. Every required document is on file and valid.";
+  $("issue-list").replaceChildren(...(shown.length ? shown.map(issueCard) : [el("div", { className: "notice", textContent: empty })]));
+
+  const risk = run.at_risk.filter((p) => state.supplier === ALL || p.supplier_id === state.supplier);
+  $("risk-title").textContent = "Parts at risk (" + risk.length + ")";
+  showIn("risk-table", table(["Part", "Description", "Supplier", "Why", ""],
+    risk.map((p) => [p.part_number, p.description, p.supplier_id, p.reasons.join("; "),
+      button("See issues", "", () => { state.severity = "all"; state.supplier = p.supplier_id; renderIssues(); window.scrollTo(0, 0); })]),
+    run.at_risk.length ? "No parts at risk for this supplier." : "No parts at risk."));
+  $("report-text").textContent = run.report_text;
+}
+
+// Reminders panel
+
+function openPanel() {
+  panelReturnFocus = document.activeElement;
+  renderPanel();
+  $("panel").hidden = false;
+  $("scrim").hidden = false;
+  $("app").inert = true;
+  $("close-panel").focus();
+}
+
+function closePanel(restoreFocus = true) {
+  if ($("panel").hidden) return;
+  $("panel").hidden = true;
+  $("scrim").hidden = true;
+  $("app").inert = false;
+  if (restoreFocus && panelReturnFocus) panelReturnFocus.focus();
+}
+
+function renderPanel() {
+  const run = state.run;
+  if (!run) {
+    $("panel-context").textContent = "";
+    $("panel-body").replaceChildren(el("div", { className: "notice", textContent: "No reminders, because the check did not finish. Open Issues to see why." }));
+    return;
+  }
+  $("panel-context").textContent = runContext();
+  if (!run.reminders.length) {
+    $("panel-body").replaceChildren(el("div", { className: "notice", textContent: "Nothing to chase. Every required document is on file and valid." }));
+    return;
+  }
+  $("panel-body").replaceChildren(...GROUPS.flatMap((group) => {
+    const items = run.reminders.filter((r) => r.severity === group.key);
+    if (!items.length) return [];
+    return [el("div", { className: "group" }, [
+      el("div", null, [el("h3", { textContent: group.label + " (" + items.length + ")" }), el("p", { className: "muted small", textContent: group.hint })]),
+      ...items.map(issueCard),
+    ])];
+  }));
+}
+
+// Draft reminder
+
+function openDraft(reminder) {
+  $("draft-text").value = reminder.draft;
+  $("draft-copy").textContent = "Copy text";
+  $("draft-dialog").showModal();
+  $("draft-text").scrollTop = 0;
+  $("draft-copy").focus();
+}
+
+async function copyDraft() {
+  const text = $("draft-text").value;
+  let copied = false;
+  try {
+    await navigator.clipboard.writeText(text);
+    copied = true;
+  } catch (error) {
+    $("draft-text").select();
+    copied = document.execCommand("copy");
+  }
+  $("draft-copy").textContent = copied ? "Copied" : "Select and copy the text above";
+}
+
+// History
+
+async function loadHistory() {
+  const supplier = $("history-supplier").value;
+  if (!supplier) return;
+  const token = ++historyToken;
+  $("history-results").replaceChildren();
+  setNotice("history-status", "", "Loading " + supplier + "…");
+  try {
+    const result = await api("/api/history?supplier=" + encodeURIComponent(supplier));
+    if (token !== historyToken) return;
+    if (result.status === "not_saved") {
+      setNotice("history-status", "", supplier + " has no saved record. Either no check has been saved yet, or all its documents were rejected, and rejected documents are not stored.");
+      $("history-results").replaceChildren(el("div", { className: "actions" }, button("Go to Issues", "primary", () => go("#/issues"))));
+    } else if (result.status === "clean") {
+      setNotice("history-status", "", supplier + " has no flags in any saved check.");
+    } else {
+      setNotice("history-status", "", "");
+      $("history-results").replaceChildren(...result.checks.map((check, index) => historyCard(check, result.checks[index + 1])));
+    }
+  } catch (error) {
+    if (token === historyToken && !error.signedOut) setNotice("history-status", "error", error.message);
+  }
+}
+
+function historyCard(check, previous) {
+  const key = (f) => f.flag_type + "|" + f.document_type + "|" + f.document_id;
+  const before = previous ? new Set(previous.flags.map(key)) : null;
+  const rows = check.flags.map((f) => {
+    const label = el("span", { textContent: f.flag_type.replace("_", " ") });
+    const type = el("span", null, label);
+    if (before && !before.has(key(f))) type.append(el("span", { className: "new-tag", textContent: "New" }));
+    return [type, documentLabel(f.document_type), orDash(f.expiry_date), orDash(f.document_id)];
+  });
+  return el("div", { className: "card" }, [
+    el("h2", { textContent: "Check " + check.check_id + ": as of " + check.as_of_date }),
+    el("p", { className: "muted small", textContent: "Tool " + check.tool_version + ", run at " + check.run_at.replace("T", " ").replace("+00:00", " UTC") }),
+    el("div", { style: "margin-top:8px" }, table(["Flag", "Document type", "Expiry", "Document"], rows, "No flags.")),
+  ]);
+}
+
+// Input data
+
+async function loadData(param) {
+  const dataset = $("data-dataset").value;
+  if (!dataset) return;
+  const token = ++dataToken;
+  $("data-results").hidden = true;
+  setNotice("data-status", "", "Loading…");
+  try {
+    const result = await api("/api/data?dataset=" + encodeURIComponent(dataset));
+    if (token !== dataToken) return;
+    state.data = result;
+    setNotice("data-status", "", "");
+    const suppliers = [...new Set([...result.documents, ...result.parts, ...result.rejected].map((r) => r.supplier_id).filter(Boolean))].sort();
+    const current = param || $("data-supplier").value;
+    fillSelect($("data-supplier"), [{ value: ALL, label: "All suppliers" }, ...suppliers.map((s) => ({ value: s, label: s }))], current);
+    const settings = result.settings;
+    showIn("data-required", table(["Part category", "Required documents"],
+      Object.entries(settings.required_documents).map(([category, types]) => [category, types.map(documentLabel).join(", ")]), "None."));
+    $("data-settings").textContent = "Warning window: " + settings.expiring_soon_days + " days. Documents that must have an expiry date: " + settings.expiring_types.map(documentLabel).join(", ") + ".";
+    renderData();
+    $("data-results").hidden = false;
+  } catch (error) {
+    if (token === dataToken && !error.signedOut) {
+      state.data = null;
+      fillSelect($("data-supplier"), [{ value: ALL, label: "All suppliers" }]);
+      setNotice("data-status", "error", error.message);
+    }
+  }
+}
+
+function renderData() {
+  const supplier = $("data-supplier").value;
+  const match = (row) => supplier === ALL || row.supplier_id === supplier;
+  const documents = state.data.documents.filter(match), parts = state.data.parts.filter(match), rejected = state.data.rejected.filter(match);
+  $("data-documents-title").textContent = "Documents (" + documents.length + ")";
+  showIn("data-documents", table(["Document", "Supplier", "Type", "Issued", "Expiry", "Status"],
+    documents.map((d) => [d.document_id, d.supplier_id, documentLabel(d.document_type), d.issue_date, orDash(d.expiry_date), d.status]), "No usable documents for this supplier."));
+  $("data-parts-title").textContent = "Parts (" + parts.length + ")";
+  showIn("data-parts", table(["Part", "Description", "Category", "Supplier"],
+    parts.map((p) => [p.part_number, p.description, p.part_category, p.supplier_id]), "No parts for this supplier."));
+  $("data-rejected-title").textContent = "Rejected records (" + rejected.length + ")";
+  showIn("data-rejected", table(["Record", "Supplier", "File", "Reason"],
+    rejected.map((r) => [r.id, orDash(r.supplier_id), r.source, r.reason]), "No rejected records for this supplier."));
+}
+
+// Events
+
+$("login-form").addEventListener("submit", submitLogin);
+$("login-show").addEventListener("click", () => {
+  const input = $("login-password"), showing = input.type === "text";
+  input.type = showing ? "password" : "text";
+  $("login-show").textContent = showing ? "Show" : "Hide";
+  $("login-show").setAttribute("aria-pressed", String(!showing));
+});
+$("sign-out").addEventListener("click", signOut);
+$("open-panel").addEventListener("click", openPanel);
+$("home-reminders").addEventListener("click", openPanel);
+$("close-panel").addEventListener("click", () => closePanel());
+$("scrim").addEventListener("click", () => closePanel());
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && !$("draft-dialog").open) closePanel();
+});
+$("draft-close").addEventListener("click", () => $("draft-dialog").close());
+$("draft-copy").addEventListener("click", copyDraft);
+$("run-dataset").addEventListener("change", () => { syncSaveButton(); runCheck(); });
+$("run-date").addEventListener("change", () => runCheck());
+$("save-button").addEventListener("click", () => runCheck(true));
+$("filter-supplier").addEventListener("change", (event) => { state.supplier = event.target.value; renderIssues(); });
+$("history-supplier").addEventListener("change", loadHistory);
+$("data-dataset").addEventListener("change", () => loadData());
+$("data-supplier").addEventListener("change", () => { if (state.data) renderData(); });
+window.addEventListener("hashchange", route);
+
+(async function start() {
+  try {
+    const session = await api("/api/session");
+    if (session.authenticated) await enterApp(session.username);
+    else showLogin("");
+  } catch (error) {
+    showLogin(error.message);
+  }
+})();
+</script>
+</body>
+</html>

@@ -36,6 +36,12 @@ def _parser():
     history = commands.add_parser("history", help="print every saved check's flags for one supplier")
     history.add_argument("supplier_id")
     history.set_defaults(command=_history)
+
+    serve = commands.add_parser("serve", help="open the browser UI on this machine")
+    serve.add_argument("--host", default="127.0.0.1", help="address to listen on (default: this machine only)")
+    serve.add_argument("--port", type=_port, default=8000, help="port to listen on (default: 8000)")
+    serve.add_argument("--data-dir", default="data", help="folder holding the input files (default: data)")
+    serve.set_defaults(command=_serve)
     return parser
 
 
@@ -44,6 +50,22 @@ def _iso_date(value):
         return date.fromisoformat(value)
     except ValueError:
         raise argparse.ArgumentTypeError(f"not a YYYY-MM-DD date: {value!r}") from None
+
+
+def _port(value):
+    try:
+        port = int(value)
+    except ValueError:
+        port = -1
+    if not 0 <= port <= 65535:
+        raise argparse.ArgumentTypeError(f"not a port number: {value!r}")
+    return port
+
+
+def _serve(args):
+    from compliance.web import serve    # web imports this module, so import it only when needed
+
+    return serve(args.host, args.port, args.data_dir)
 
 
 def _run(args):

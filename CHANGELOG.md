@@ -8,7 +8,9 @@ and this project uses [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Added
-- (none)
+- Browser UI: `python -m compliance serve`, with sign-in, a home page, issues with actions, a reminders panel, supplier history and input data. It reads fixed data sets, and previews save nothing.
+- Draft reminder: writes a message to copy into your email. Nothing is sent from the tool.
+- Demo scenarios in `data/scenarios/`: a renewal, a day with no issues, and a broken input file.
 
 ## [1.1.0] — 2026-11-02
 
