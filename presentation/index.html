@@ -227,6 +227,12 @@
   #s1 .team a.repo { font-size: 18px; }
   .repo-line { font-size: 18px; color: var(--ink); }
 
+  /* Without scripts (preview panes, blocked scripts) every slide shows, stacked and scrollable. */
+  html:not(.js), html:not(.js) body { height: auto; overflow: auto; }
+  html:not(.js) #stage { position: static; width: 1280px; height: auto; margin: 0 auto; transform: none !important; overflow: visible; background: none; }
+  html:not(.js) .slide { display: flex; position: relative; inset: auto; width: 1280px; height: 720px; margin-bottom: 16px; background: var(--paper); }
+  html:not(.js) #bar, html:not(.js) #progress { display: none; }
+
   /* Controls */
   #bar { position: absolute; right: 16px; bottom: 10px; display: flex; align-items: center; gap: 4px; font-size: 13px; color: var(--muted); z-index: 3; opacity: .3; transition: opacity .15s; }
   #bar:hover, #bar:focus-within { opacity: 1; }
@@ -463,11 +469,11 @@ Check 1  as of 2026-10-26  (tool 1.1.0, run ...)</pre>
       <div class="auto-result">
         <div class="auto-saving">
           <p class="tag">Estimated saving, up to</p>
-          <output id="calc-saving" for="calc-suppliers calc-minutes calc-rate"></output>
+          <output id="calc-saving" for="calc-suppliers calc-minutes calc-rate">$10,850</output>
           <p class="small muted">a year in staff time spent finding what needs attention</p>
         </div>
         <div class="auto-compare">
-          <div><p class="tag">By hand</p><output id="calc-result" for="calc-suppliers calc-minutes"></output><p class="small muted">a year</p></div>
+          <div><p class="tag">By hand</p><output id="calc-result" for="calc-suppliers calc-minutes">217 hours</output><p class="small muted">a year</p></div>
           <div><p class="tag">With the tracker</p><div class="auto-time">0.06 <small>s</small></div><p class="small muted">each weekly run, measured on 1,000 suppliers</p></div>
         </div>
         <p class="small muted">People still chase suppliers and make the decisions. Automation removes the searching, not the judgement.</p>
@@ -541,7 +547,8 @@ const notes = document.getElementById("notes");
 let index = 0;
 
 function fit() {
-  const scale = Math.min(window.innerWidth / 1280, window.innerHeight / 720);
+  // A hidden or not-yet-sized frame reports 0, which would scale the slides to nothing.
+  const scale = Math.min(window.innerWidth / 1280, window.innerHeight / 720) || 1;
   stage.style.transform = "translate(-50%, -50%) scale(" + scale + ")";
 }
 
@@ -618,6 +625,7 @@ window.addEventListener("hashchange", () => show(slideFromHash(), false));
 fit();
 updateCalculator();
 show(slideFromHash());
+document.documentElement.classList.add("js");
 </script>
 </body>
 </html>
