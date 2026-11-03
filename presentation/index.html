@@ -556,7 +556,7 @@ function show(next, updateHash = true) {
   document.getElementById("prev").disabled = index === 0;
   document.getElementById("next").disabled = index === slides.length - 1;
   notes.textContent = slides[index].querySelector(".notes-source").textContent;
-  if (updateHash) history.replaceState(null, "", "#" + (index + 1));
+  if (updateHash) { try { history.replaceState(null, "", "#" + (index + 1)); } catch (error) {} }
 }
 
 function slideFromHash() {
