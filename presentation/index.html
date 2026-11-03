@@ -130,6 +130,103 @@
   .map-arrow { font-size: 24px; color: var(--muted); align-self: center; text-align: center; }
   .map-out { font-size: 14.5px; line-height: 1.38; padding: 10px 14px; }
 
+  /* Fill the stage: larger type and less margin, with the same content. */
+  .slide { padding: 30px 44px 38px; }
+  .kicker { font-size: 16px; margin-bottom: 6px; }
+  h1 { font-size: 40px; max-width: none; margin-bottom: 16px; }
+  .source { font-size: 13.5px; line-height: 1.3; }
+  .handoff { font-size: 20px; }
+
+  #s1 h1 { font-size: 84px; }
+  #s1 .lead { font-size: 34px; max-width: 1100px; text-wrap: balance; }
+  #s1 .kicker { font-size: 20px; }
+  #s1 .team { left: 44px; right: 44px; font-size: 20px; }
+
+  #s2 .flow { flex: 1; min-height: 0; gap: 40px; margin: 8px 0 10px; }
+  #s2 .flow > div { background: var(--subtle); padding: 26px 22px; display: flex; flex-direction: column; justify-content: center; }
+  #s2 .flow > div:not(:last-child)::after { right: -33px; top: 50%; margin-top: -18px; font-size: 26px; }
+  #s2 .flow h2 { font-size: 38px; line-height: 1.12; margin-bottom: 20px; }
+  #s2 .flow p { font-size: 27px; line-height: 1.32; }
+
+  #s4 .stats { flex: 1; min-height: 0; grid-template-rows: 1fr 1fr; gap: 16px 44px; }
+  #s4 .stat .tag { font-size: 18px; }
+  #s4 .stat b { font-size: 84px; margin: 6px 0 10px; }
+  #s4 .stat span.text { font-size: 23px; }
+
+  #s6 .cols, #s10 .cols { flex: 1; min-height: 0; grid-template-columns: 0.82fr 1.3fr !important; gap: 28px !important; align-items: center !important; }
+  #s6 table, #s10 table { font-size: 23px; }
+  #s6 th, #s10 th { font-size: 16px; }
+  #s6 td, #s10 td { padding: 26px 14px 26px 0; }
+  #s10 .callout { font-size: 25px; margin-top: 24px !important; }
+  .caption { font-size: 14.5px; }
+
+  #s7 .flow { margin-bottom: 26px; }
+  #s7 .flow h2 { font-size: 27px; }
+  #s7 .flow p { font-size: 20px; }
+  #s7 .cols { flex: 1; min-height: 0; grid-template-columns: 1.15fr 1fr !important; gap: 24px !important; align-items: center !important; }
+  #s7 pre { font-size: 19.5px; line-height: 1.7; padding: 26px 20px; }
+
+  table.simple { font-size: 24px; }
+  table.simple th { font-size: 17px; }
+  table.simple td { padding: 15px 22px 15px 0; }
+  table.simple td.muted { font-size: 19px; }
+  .next-up { margin-top: 12px; padding: 14px 20px; }
+  .next-up h2 { font-size: 21px; }
+  .next-items p { font-size: 18px; }
+
+  table.ba { font-size: 24px; }
+  table.ba th { font-size: 17px; }
+  table.ba td { padding: 8px 14px 8px 0; }
+  table.ba td:not(:first-child) { font-size: 54px; }
+  .ba-notes { margin-top: 16px; flex: 1; }
+  .ba-notes h2 { font-size: 24px; }
+  .ba-notes p { font-size: 21px; }
+
+  .mapping { flex: 1; min-height: 0; gap: 10px 8px; grid-template-rows: auto 1fr auto; }
+  .map-mod h2 { font-size: 21px; }
+  .map-mod p { font-size: 17.5px; }
+  .map-out { font-size: 16.5px; line-height: 1.34; padding: 10px 16px; }
+
+  #s11 .flow { margin-bottom: 20px; }
+  #s11 .flow h2 { font-size: 28px; }
+  #s11 .flow p { font-size: 24px; }
+  #s11 .big { font-size: 270px; line-height: 0.98; }
+  #s11 .f3-plain h2 { font-size: 30px; }
+  #s11 .f3-plain p { font-size: 24px; }
+
+  .auto { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 1.2fr; gap: 36px; margin-bottom: 8px; }
+  .auto .panel { padding: 22px 26px; }
+  .auto .panel h2 { font-size: 26px; }
+  .auto .panel label { font-size: 20px; margin-top: 30px; }
+  .auto .panel select { font-size: 27px; padding: 13px 14px; margin-top: 8px; }
+  .auto .small { font-size: 20px; line-height: 1.32; }
+  .auto .tag { font-size: 18px; font-weight: 500; color: var(--muted); }
+  .auto-result { display: flex; flex-direction: column; justify-content: space-between; gap: 14px; }
+  .auto-saving { border-top: 2px solid var(--ink); padding-top: 10px; }
+  #calc-saving { display: block; font-size: 138px; line-height: 1.05; font-weight: 600; letter-spacing: -0.04em; }
+  .auto-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+  .auto-compare > div { border-top: 1px solid var(--strong); padding-top: 8px; }
+  #calc-result, .auto-time { display: block; font-size: 58px; line-height: 1.1; font-weight: 600; letter-spacing: -0.03em; margin: 2px 0; }
+  .auto-time small { font-size: 28px; }
+
+  #s-vedanshu-efficiency .stat .tag { font-size: 16px; }
+  #s-vedanshu-efficiency .stat b { font-size: 76px; }
+  #s-vedanshu-efficiency .stat span.text { font-size: 21px; }
+  .cost-block { margin-top: 22px; }
+  .cost-block h2 { font-size: 26px; margin-bottom: 8px; }
+  table.cost { font-size: 20px; }
+
+  .ask { flex: 1; min-height: 0; gap: 56px !important; }
+  .ask h2 { font-size: 28px; margin-bottom: 14px; }
+  .ask table { font-size: 28px; }
+  .ask td { padding: 26px 14px 26px 0; }
+
+  a.repo { color: inherit; text-underline-offset: 3px; }
+  a.repo:hover { color: var(--ink); }
+  #s1 .team { display: flex; flex-direction: column; gap: 4px; }
+  #s1 .team a.repo { font-size: 18px; }
+  .repo-line { font-size: 18px; color: var(--ink); }
+
   /* Controls */
   #bar { position: absolute; right: 16px; bottom: 10px; display: flex; align-items: center; gap: 4px; font-size: 13px; color: var(--muted); z-index: 3; opacity: .3; transition: opacity .15s; }
   #bar:hover, #bar:focus-within { opacity: 1; }
@@ -159,14 +256,14 @@
     <p class="kicker">Week 3 team project, CoForge Associate FDE Training</p>
     <h1>Supplier Compliance Tracker</h1>
     <p class="lead">Know which parts are at risk from a supplier document, before an auditor asks.</p>
-    <div class="team">Team 4: Dheepthi Reddy, Nikita Ravi, Vedanshu Daxesh Patel</div>
+    <div class="team"><span>Team 4: Dheepthi Reddy, Nikita Ravi, Vedanshu Daxesh Patel</span><a class="repo" href="https://github.com/Team-4-Supplier-Compliance-Doc-Tracker/Supplier-Compliance-Doc-Tracker" target="_blank" rel="noopener">github.com/Team-4-Supplier-Compliance-Doc-Tracker/Supplier-Compliance-Doc-Tracker</a></div>
     <div class="notes-source">Open with the promise in one sentence. The flow: the problem, what it is worth, then each of us on our research and what we built, then a live demo, then the ask.</div>
   </section>
 
   <section class="slide" id="s2" aria-label="The problem">
     <p class="kicker">The problem</p>
     <h1>One missed date becomes a problem nobody can see until an auditor asks</h1>
-    <div class="flow f4" style="margin-top:44px">
+    <div class="flow f4">
       <div><h2>A certificate lapses</h2><p>Dozens of suppliers, each with documents to keep current</p></div>
       <div><h2>Nobody is alerted</h2><p>The date sits in a spreadsheet cell or an email</p></div>
       <div><h2>Parts keep being ordered</h2><p>Nothing links the document to the parts that need it</p></div>
@@ -210,7 +307,7 @@
   <section class="slide" id="s7" aria-label="Dheepthi technical">
     <p class="kicker">Dheepthi Reddy: how it works</p>
     <h1>Bad data stops at the door, and each rule is small and separate</h1>
-    <div class="flow f5" style="margin-bottom:34px">
+    <div class="flow f5">
       <div><h2>Input files</h2><p>Documents, parts, settings</p></div>
       <div><h2>Loaders</h2><p>Reject bad records with a reason</p></div>
       <div><h2>Rules</h2><p>Expired, expiring, missing, pending</p></div>
@@ -236,7 +333,7 @@ class PendingDocumentRule(ComplianceRule):
 
   <section class="slide" id="s-nikita-research" aria-label="Nikita research">
     <p class="kicker">Nikita Ravi: workflow research</p>
-    <h1 style="margin-bottom:20px">An expiry date in a spreadsheet can't warn anyone</h1>
+    <h1>An expiry date in a spreadsheet can't warn anyone</h1>
     <table class="simple">
       <tr><th style="width:33%">Where today's workflow breaks</th><th style="width:27%">What we adapted</th><th>Why</th></tr>
       <tr><td>Nothing happens when the date in the cell passes</td><td><b>Flags, with 45 days' warning</b></td><td class="muted">SAP warns at 30, SKU.io from 90, so we asked the customer (Q4)</td></tr>
@@ -336,7 +433,7 @@ Check 1  as of 2026-10-26  (tool 1.1.0, run ...)</pre>
   <section class="slide" id="s11" aria-label="Vedanshu technical">
     <p class="kicker">Vedanshu Daxesh Patel: how it works</p>
     <h1>The software changes, and the history stays</h1>
-    <div class="flow f3" style="margin-bottom:34px">
+    <div class="flow f3">
       <div><h2>Release 1.0.0</h2><div class="big">7</div><p>flags on the sample</p></div>
       <div><h2>Release 1.1.0</h2><div class="big">9</div><p>the pending rule, same data</p></div>
       <div><h2>Roll back to 1.0.0</h2><div class="big">7</div><p>every check still in history</p></div>
@@ -352,53 +449,59 @@ Check 1  as of 2026-10-26  (tool 1.1.0, run ...)</pre>
   <section class="slide" id="s-vedanshu-automation" aria-label="Vedanshu automation and time">
     <p class="kicker">Vedanshu Daxesh Patel: automation and time</p>
     <h1>Hours of checking by hand, or a fraction of a second</h1>
-    <div class="cols c2" style="gap:48px;align-items:start">
+    <div class="auto">
       <div class="panel">
         <h2>Checking by hand today</h2>
-        <p class="small muted">Your numbers: we have no baseline yet</p>
+        <p class="small muted">Example numbers: change them to yours</p>
         <label for="calc-suppliers">Suppliers</label>
         <select id="calc-suppliers"><option value="25">25</option><option value="50" selected>50</option><option value="100">100</option><option value="250">250</option></select>
         <label for="calc-minutes">Minutes per supplier, each weekly check</label>
         <select id="calc-minutes"><option value="2">2</option><option value="5" selected>5</option><option value="10">10</option><option value="15">15</option></select>
-        <output id="calc-result" for="calc-suppliers calc-minutes"></output>
-        <p class="small muted">a year, finding what needs attention</p>
+        <label for="calc-rate">Staff cost per hour (assumed)</label>
+        <select id="calc-rate"><option value="25">$25</option><option value="50" selected>$50</option><option value="75">$75</option><option value="100">$100</option></select>
       </div>
-      <div>
-        <h2>With the tracker</h2>
-        <p class="small muted">Measured: 1,000 suppliers, each weekly run</p>
-        <div class="big" style="margin:18px 0 10px">0.06 <small>s</small></div>
+      <div class="auto-result">
+        <div class="auto-saving">
+          <p class="tag">Estimated saving, up to</p>
+          <output id="calc-saving" for="calc-suppliers calc-minutes calc-rate"></output>
+          <p class="small muted">a year in staff time spent finding what needs attention</p>
+        </div>
+        <div class="auto-compare">
+          <div><p class="tag">By hand</p><output id="calc-result" for="calc-suppliers calc-minutes"></output><p class="small muted">a year</p></div>
+          <div><p class="tag">With the tracker</p><div class="auto-time">0.06 <small>s</small></div><p class="small muted">each weekly run, measured on 1,000 suppliers</p></div>
+        </div>
         <p class="small muted">People still chase suppliers and make the decisions. Automation removes the searching, not the judgement.</p>
       </div>
     </div>
-    <p class="source">Hours = suppliers &times; minutes &times; 52 weeks. Illustrative until measured in a pilot, and not a savings claim. Weekly cadence from the customer (Q7); a person starts each run.</p>
-    <div class="notes-source">Ask Adam for his own numbers and change the dropdowns live. The left side is an estimate of today's effort. The right side is measured. Do not call the difference guaranteed savings: people still review the flags and chase suppliers. That is why we propose a pilot at the end. Be accurate if asked: the check and the report are automated, the schedule is not; someone starts the run each week. Next: what this means for the business.</div>
+    <p class="source">Example, not a measured saving: $50 an hour is our assumption, not a customer figure, and a pilot would measure the real number. Saving = suppliers &times; minutes &times; 52 weeks &divide; 60 &times; hourly cost. Weekly cadence from the customer (Q7); a person starts each run.</p>
+    <div class="notes-source">Vedanshu: ask Adam for his own numbers and change the dropdowns live. Example: 50 suppliers at 5 minutes each is 217 hours a year; at an assumed $50 an hour, that is about $10,850. The $50 is our assumption, so say that out loud and ask what a compliance person really costs. It counts staff time only, and it is the most the client could save: people still review the flags and chase suppliers, and someone starts each run. It leaves out audit findings, which we have not priced. That is why we propose a pilot at the end. The 0.06 s is a speed check on generated data, on a laptop, not a production benchmark. Next: what this means for the business.</div>
   </section>
 
   <section class="slide" id="s-vedanshu-efficiency" aria-label="Vedanshu efficiency and business view">
     <p class="kicker">Vedanshu Daxesh Patel: efficiency, from the business side</p>
-    <h1 style="margin-bottom:26px">Little to run, low risk to change, quick to answer an auditor</h1>
+    <h1>Little to run, low risk to change, quick to answer an auditor</h1>
     <div class="stats">
       <div class="stat"><span class="tag">Effort to run</span><b>1 file</b><span class="text">One container and one small database: no licence, database server or admin role. Under 0.5 MB for 10 years of weekly checks.</span></div>
       <div class="stat"><span class="tag">Risk of a release</span><b>1 swap</b><span class="text">A bad release rolls back with one image swap and no data migration. Every check stays in history. CI runs 183 tests first.</span></div>
       <div class="stat"><span class="tag">Audit readiness</span><b>0.03 s</b><span class="text">To show what we knew, across 520 saved checks, instead of rebuilding it from email and spreadsheets. Backup: under 0.1 s.</span></div>
     </div>
-    <div style="margin-top:30px">
-      <h2 style="margin-bottom:8px">What the problem costs the business today</h2>
+    <div class="cost-block">
+      <h2>What the problem costs the business today</h2>
       <table class="cost">
-        <tr><td style="width:17%"><b>Staff time</b></td><td style="width:33%" class="muted">Weekly searching through email and folders: 217 hours a year at 50 suppliers, 5 minutes each (illustrative)</td><td style="width:17%"><b>Audit findings</b></td><td class="muted">Auditors &ldquo;commonly cite expired certificates left on supplier records&rdquo;</td></tr>
+        <tr><td style="width:17%"><b>Staff time</b></td><td style="width:33%" class="muted">Weekly searching through email and folders: 217 hours a year at 50 suppliers, 5 minutes each, about $10,850 at an assumed $50 an hour (illustrative)</td><td style="width:17%"><b>Audit findings</b></td><td class="muted">Auditors &ldquo;commonly cite expired certificates left on supplier records&rdquo;</td></tr>
         <tr><td><b>Unseen risk</b></td><td class="muted">Parts keep being ordered, and nobody can say which are affected until an auditor asks</td><td><b>The company's certificate</b></td><td class="muted">A major finding left unresolved &ldquo;may lead to suspension&rdquo;, and eventually withdrawal</td></tr>
       </table>
     </div>
-    <p class="source" style="padding-top:6px">Measured in Python on a MacBook, not Docker, on sample data, 2026-11-02; a real database grows with its flags. Racklify; Control Union, one certification body, whose rules vary by programme. No money figures: we found no independent one and have no customer baseline. <b style="color:var(--ink);font-size:15px">Next: live demo.</b></p>
-    <div class="notes-source">Vedanshu: this is the business view of efficiency, in effort and risk rather than money. Three points: there is little to run, a release is low risk because history is separate from the software, and audit questions take seconds. The main value is audit readiness. Do not quote downtime costs: those articles are about production lines, and if this tool goes down the plant keeps running. The real risk is losing audit records, which is why restore checks a backup first. If asked for a money figure: we found no independent one. Author-it, which sells documentation software, estimates $15,000 to $80,000 for a major documentation finding, but cites no data, so do not present it as fact. Whether an expired supplier certificate counts as a major finding is the auditor's call. In a pilot, also track release failure rate, recovery time and restore confidence, as measures rather than benchmarks. Then drive the demo: docs/demo_walkthrough.md. After the demo, go to the last slide.</div>
+    <p class="source" style="padding-top:6px">Measured in Python on a MacBook, not Docker, on sample data, 2026-11-02; a real database grows with its flags. Racklify; Control Union, one certification body, whose rules vary by programme. No measured money figures: we found no independent one and have no customer baseline. <b style="color:var(--ink);font-size:15px">Next: live demo.</b></p>
+    <div class="notes-source">Vedanshu: this is the business view of efficiency, mostly in effort and risk. The only dollar figure is the staff-time example from the last slide, and it rests on an assumed hourly cost. Three points: there is little to run, a release is low risk because history is separate from the software, and audit questions take seconds. The main value is audit readiness. Do not quote downtime costs: those articles are about production lines, and if this tool goes down the plant keeps running. The real risk is losing audit records, which is why restore checks a backup first. If asked for a measured money figure: we found no independent one. Author-it, which sells documentation software, estimates $15,000 to $80,000 for a major documentation finding, but cites no data, so do not present it as fact. Whether an expired supplier certificate counts as a major finding is the auditor's call. In a pilot, also track release failure rate, recovery time and restore confidence, as measures rather than benchmarks. Then drive the demo: docs/demo_walkthrough.md. After the demo, go to the last slide.</div>
   </section>
 
   <section class="slide" id="s12" aria-label="The ask">
     <p class="kicker">Next step</p>
     <h1>The ask: a pilot with one team's real supplier list</h1>
-    <div class="cols c2" style="gap:56px;margin-top:10px">
+    <div class="cols c2 ask">
       <div>
-        <h2 style="margin-bottom:12px">What the pilot would measure</h2>
+        <h2>What the pilot would measure</h2>
         <table>
           <tr><td>Weekly review time</td><td class="muted">before and after</td></tr>
           <tr><td>Lapses caught early</td><td class="muted">caught ÷ all lapses</td></tr>
@@ -407,7 +510,7 @@ Check 1  as of 2026-10-26  (tool 1.1.0, run ...)</pre>
         </table>
       </div>
       <div>
-        <h2 style="margin-bottom:12px">What it needs first</h2>
+        <h2>What it needs first</h2>
         <table>
           <tr><td>Documents linked to parts, not only suppliers</td></tr>
           <tr><td>Real reminders: email, with supplier contacts</td></tr>
@@ -415,6 +518,7 @@ Check 1  as of 2026-10-26  (tool 1.1.0, run ...)</pre>
         </table>
       </div>
     </div>
+    <p class="source repo-line">Code, tests and client brief: <a class="repo" href="https://github.com/Team-4-Supplier-Compliance-Doc-Tracker/Supplier-Compliance-Doc-Tracker" target="_blank" rel="noopener">github.com/Team-4-Supplier-Compliance-Doc-Tracker/Supplier-Compliance-Doc-Tracker</a></p>
     <div class="notes-source">Close with the ask. We have shown what the product does on synthetic data; a pilot turns the illustrative time figure into a measured one. Be plain about what a real rollout needs first. Then open for questions.</div>
   </section>
 
@@ -473,8 +577,10 @@ function toggleFullScreen() {
 function updateCalculator() {
   const suppliers = Number(document.getElementById("calc-suppliers").value);
   const minutes = Number(document.getElementById("calc-minutes").value);
+  const rate = Number(document.getElementById("calc-rate").value);
   const hours = Math.round(suppliers * minutes * 52 / 60);
   document.getElementById("calc-result").textContent = hours.toLocaleString("en-US") + " hours";
+  document.getElementById("calc-saving").textContent = "$" + (hours * rate).toLocaleString("en-US");
 }
 
 document.getElementById("prev").addEventListener("click", () => show(index - 1));
@@ -483,6 +589,7 @@ document.getElementById("notes-toggle").addEventListener("click", toggleNotes);
 document.getElementById("full").addEventListener("click", toggleFullScreen);
 document.getElementById("calc-suppliers").addEventListener("change", updateCalculator);
 document.getElementById("calc-minutes").addEventListener("change", updateCalculator);
+document.getElementById("calc-rate").addEventListener("change", updateCalculator);
 
 document.addEventListener("keydown", (event) => {
   if (event.metaKey || event.ctrlKey || event.altKey) return;
